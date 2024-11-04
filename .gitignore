@@ -188,3 +188,8 @@ readstore_basic/backend/app/migrations/*
 rs/*
 
 run_build.sh
+
+*/.vscode/*
+.vscode/*
+
+*.tar.gz
