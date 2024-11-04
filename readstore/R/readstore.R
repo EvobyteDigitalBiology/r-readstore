@@ -1,20 +1,37 @@
-library(dplyr)
-
-
 RETURN_TYPES = c('json')
 
+#' check_return_type
+#' 
+#' Stop if return_type is not valid
+#' 
+#' @param return_type The return type to check 
 check_return_type <- function(return_type) {
     if (!(return_type %in% RETURN_TYPES)) {
         stop('Invalid return_type')
     }
 }
 
+#' get_client
+#'
+#' Get ReadStore client to interact with ReadStore API.
+#' Providing username and token will take precedence over configuration file.
+#' Environment variables will take precedence over configuration file.
+#' 
+#' @param config_dir Path to the configuration directory to load the configuration from
+#' @param username Username to use for authentication
+#' @param token Token to use for authentication
+#' @param host Host to connect to
+#' @param port Port to connect to
+#' @param return_type The return type to use for the API calls
+#' @param fastq_extensions FASTQ file extensions to use
+#' @return ReadStore client (list)
+#' @export
 get_client <- function(config_dir = '~/.readstore',
                         username = NULL,
                         token = NULL,
                         host = 'http://localhost',
-                        return_type = 'json',
                         port = 8000,
+                        return_type = 'json',
                         fastq_extensions = c('.fastq','.fastq.gz','.fq','.fq.gz')) {
 
     endpoint <- paste0(paste(host, port, sep=':'),'/')
@@ -70,7 +87,7 @@ get_client <- function(config_dir = '~/.readstore',
     rs_client <- get_rs_client(
         username = username,
         token = token,
-        endpoint = endpoint
+        endpoint_url = endpoint
     )
 
     rs_client$fastq_extensions = fastq_extensions
@@ -79,6 +96,17 @@ get_client <- function(config_dir = '~/.readstore',
     return(rs_client)
 }
 
+
+#' list_datasets
+#'
+#' Get list of fastq datasets from the ReadStore API
+#' 
+#' @param client ReadStore client
+#' @param project_id Project ID to filter datasets for
+#' @param project_name Project name to filter datasets for
+#' @param return_type The return type (currently only json)
+#' @return (json) list of fastq datasets
+#' @export
 list_datasets <- function(client,
                         project_id = NULL,
                         project_name = NULL,
@@ -89,6 +117,17 @@ list_datasets <- function(client,
     return(fq_datasets)
 }
 
+#' get_dataset
+#'
+#' Get fastq dataset from the ReadStore API
+#' ID or Name must be provided
+#' 
+#' @param client ReadStore client
+#' @param dataset_id Dataset ID to return
+#' @param dataset_name Dataset name to return
+#' @param return_type The return type (currently only json)
+#' @return json object (list) with fastq dataset
+#' @export
 get_dataset <- function(client,
                         dataset_id = NULL,
                         dataset_name = NULL,
@@ -104,10 +143,21 @@ get_dataset <- function(client,
 
     }
 
+#' get_fastq
+#'
+#' Get fastq files from the ReadStore API for a dataset
+#' ID or Name of dataset must be provided
+#' 
+#' @param client ReadStore client
+#' @param dataset_id Dataset ID to return
+#' @param dataset_name Dataset name to return
+#' @param return_type The return type (currently only json)
+#' @return json object (list) with fastq dataset
+#' @export
 get_fastq <- function(client,
-                        dataset_id = NULL,
-                        dataset_name = NULL,
-                        return_type = NULL) {
+                      dataset_id = NULL,
+                      dataset_name = NULL,
+                      return_type = NULL) {
         
     if (is.null(dataset_id) & is.null(dataset_name)) {
         stop("dataset_id or dataset_name required")
@@ -125,11 +175,23 @@ get_fastq <- function(client,
                         )
 
 
-        fq_files = lapply(fq_file_ids, function(x) get_fq_file(client, fq_file_id=x))
+        fq_files = lapply(fq_file_ids, function(x) get_fq_file_rs(client, fq_file_id=x))
         return(fq_files)
     }
 }
 
+#' download_dataset_attachment
+#'
+#' Download attachment from a dataset
+#' ID or Name of dataset must be provided
+#' Also provide the attachment name to download
+#' 
+#' @param client ReadStore client
+#' @param attachment_name Attachment name to download
+#' @param dataset_id Dataset ID to return
+#' @param dataset_name Dataset name to return
+#' @param outpath Path to save the attachment
+#' @export
 download_dataset_attachment <- function(
     client,
     attachment_name,
@@ -164,11 +226,17 @@ download_dataset_attachment <- function(
             stop(paste0('Output directory does not exists ', output_dirname))
         }
 
-        download_fq_dataset_attachment(client, attachment_name, outpath, dataset_id, dataset_name)
+        download_fq_dataset_attachment_rs(client, attachment_name, outpath, dataset_id, dataset_name)
     }
 }
 
-
+#' list_projects
+#'
+#' Get list of projects from the ReadStore API
+#' 
+#' @param client ReadStore client
+#' @param return_type The return type (currently only json)
+#' @return (json) list of projects (list objects)
 list_projects <- function(client,
                         return_type = NULL) {
 
@@ -178,6 +246,16 @@ list_projects <- function(client,
 }
 
 
+#' get_projects
+#'
+#' Get project from the ReadStore API
+#' ID or Name of project must be provided
+#' 
+#' @param client ReadStore client
+#' @param project_id Project ID to return
+#' @param project_name Project name to return
+#' @param return_type The return type (currently only json)
+#' @return json object (list) with project
 get_project <- function(client,
                         project_id = NULL,
                         project_name = NULL,
@@ -192,7 +270,18 @@ get_project <- function(client,
     return(project)
 }
 
-
+#' download_project_attachment
+#'
+#' Download attachment from a project
+#' ID or Name of project be provided
+#' Also provide the attachment name to download
+#' 
+#' @param client ReadStore client
+#' @param attachment_name Attachment name to download
+#' @param project_id Project ID to return
+#' @param project_name Project name to return
+#' @param outpath Path to save the attachment
+#' @export
 download_project_attachment <- function(
     client,
     attachment_name,
@@ -231,6 +320,13 @@ download_project_attachment <- function(
     }
 }
 
+#' upload_fastq
+#'
+#' Upload FASTQ files to ReadStore
+#' 
+#' @param client ReadStore client
+#' @param fastq FASTQ files to upload as a vector
+#' @export
 upload_fastq <- function(client, fastq) {
 
     upload_files = c()
