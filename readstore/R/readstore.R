@@ -344,5 +344,5 @@ upload_fastq <- function(client, fastq) {
         upload_files = c(upload_files, fq)
     }
 
-    upload_fastq_rs(upload_files)
+    upload_fastq_rs(client, upload_files)
 }
