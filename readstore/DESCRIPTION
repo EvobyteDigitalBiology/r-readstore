@@ -1,15 +1,21 @@
 Package: readstore
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: This is the R client (SDK) for the ReadStore API
+Version: 0.1.0
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Jonathan", "Alles", , "jonathan.alles@evo-byte.com", role = c("aut", "cre"))
+Description: The readstore package can be used to access projects, datasets, metadata and attachment files in the ReadStore Database from R code and scripts.
+    The package enables you to automate your bioinformatics pipelines, Python scripts and notebooks.
+    The ReadStore API is a RESTful API that allows you to access the ReadStore Database from any programming language.
+License: GPL-3 | file LICENSE
+URL: https://github.com/EvobyteDigitalBiology/r-readstore
+BugReports: https://github.com/EvobyteDigitalBiology/r-readstore/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Imports:
+    httr,
+    base64enc,
+    ini
