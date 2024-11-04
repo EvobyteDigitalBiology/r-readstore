@@ -237,6 +237,7 @@ download_dataset_attachment <- function(
 #' @param client ReadStore client
 #' @param return_type The return type (currently only json)
 #' @return (json) list of projects (list objects)
+#' @export
 list_projects <- function(client,
                         return_type = NULL) {
 
@@ -256,6 +257,7 @@ list_projects <- function(client,
 #' @param project_name Project name to return
 #' @param return_type The return type (currently only json)
 #' @return json object (list) with project
+#' @export
 get_project <- function(client,
                         project_id = NULL,
                         project_name = NULL,
