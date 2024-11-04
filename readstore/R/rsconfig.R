@@ -1,7 +1,14 @@
 library(ini)
-library(assertthat)
 
-
+#' load_rs_config
+#'
+#' Load ReadStore configuration from file or ENV variables
+#' 
+#' @param filename Path to configuration file
+#' @param default_endpoint_url Default endpoint URL to set if not found in file or ENV
+#' @param default_fastq_extensions Default fastq extensions to set if not found in file or ENV
+#' @param default_output Default output format to set if not found in file or ENV
+#' @return List containing username, token, endpoint URL, fastq extensions and output format
 load_rs_config <- function(
     filename = NULL,
     default_endpoint_url = NULL,
@@ -45,59 +52,76 @@ load_rs_config <- function(
     }
     
     # If config parameters are not found in file or ENV, try to use default arguments if provided
-    assert_that(!is.null(username), msg = "Username Not Found")
-    assert_that(!is.null(token), msg = "Token Not Found")
+    if (is.null(username)) {
+        stop("Config: Username Not Found")
+    }
+    if (is.null(token)) {
+        stop("Config: Token Not Found")
+    }
     
     if (is.null(endpoint_url)) {
-        assert_that(!is.null(default_endpoint_url), msg = "Config: Endpoint URL Not Found")
+        if (is.null(default_endpoint_url)) {
+            stop("Config: Endpoint URL Not Found")
+        }
+
         endpoint_url <- default_endpoint_url
     }
     
     if (is.null(fastq_extensions)) {
-        assert_that(!is.null(default_fastq_extensions), msg = "Config: Fastq Extensions Not Found")
+        if (is.null(default_fastq_extensions)) {
+            stop("Config: Fastq Extensions Not Found")
+        }
+        
         fastq_extensions <- default_fastq_extensions
     }
     
     if (is.null(output)) {
-        assert_that(!is.null(default_output), msg = "Config: Output Format Not Found")
+        if (is.null(default_output)) {
+            stop("Config: Output Not Found")
+        }
+        
         output <- default_output
     }
     
     return(list(username = username, token = token, endpoint_url = endpoint_url, fastq_extensions = fastq_extensions, output = output))
 }
 
-write_rs_config <- function(filename, username, token, endpoint_url, fastq_extensions, output) {
-            # Write configuration file
-            #
-            # Write configuration file containing
-            # username, token, endpoint URL, fastq extensions and output format.
-            #
-            # Args:
-            #     filename: Path to write configuration file
-            #     username: Username
-            #     token: Token
-            #     endpoint_url: URL of the ReadStore API
-            #     fastq_extensions (List[str]): List of fastq extensions
-            #     output: Default output format
+#' write_rs_config
+#'
+#' Write ReadStore configuration to file in INI format
+#' Set permissions to 0600 (read/write only by owner)
+#' 
+#' @param filename Path to configuration file
+#' @param username Username
+#' @param token Token
+#' @param endpoint_url Endpoint URL
+#' @param fastq_extensions Fastq extensions
+#' @param output Output format
+write_rs_config <- function(filename,
+                            username,
+                            token,
+                            endpoint_url,
+                            fastq_extensions,
+                            output) {
 
-            if (!dir.exists(dirname(filename))) {
-                stop("Directory Not Found")
-            }
+    if (!dir.exists(dirname(filename))) {
+        stop("Directory Not Found")
+    }
 
-            # Create a list to hold the configuration
-            config <- list(
-                general = list(
-                    endpoint_url = endpoint_url,
-                    fastq_extensions = paste(fastq_extensions, collapse = ","),
-                    output = output
-                ),
-                credentials = list(
-                    username = username,
-                    token = token
-                )
-            )
+    # Create a list to hold the configuration
+    config <- list(
+        general = list(
+            endpoint_url = endpoint_url,
+            fastq_extensions = paste(fastq_extensions, collapse = ","),
+            output = output
+        ),
+        credentials = list(
+            username = username,
+            token = token
+        )
+    )
 
-            # Write the configuration to a file
-            ini::write.ini(config, filename)
-            Sys.chmod(filename, mode = "0600")
-        }
+    # Write the configuration to a file
+    ini::write.ini(config, filename)
+    Sys.chmod(filename, mode = "0600")
+}
