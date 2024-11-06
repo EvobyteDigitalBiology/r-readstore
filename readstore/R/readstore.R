@@ -83,6 +83,11 @@ get_client <- function(config_dir = '~/.readstore',
         stop('No token found in configuration')
     }
 
+    # Make sure endpoint end with trailing slash
+    if (!(grepl('/$', endpoint))) {
+        endpoint <- paste0(endpoint, '/')
+    }
+
     # Validate connection through rs_client
     rs_client <- get_rs_client(
         username = username,
