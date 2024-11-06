@@ -83,6 +83,10 @@ load_rs_config <- function(
         output <- default_output
     }
     
+    if (!(grepl('/$', endpoint_url))) {
+        endpoint_url <- paste0(endpoint_url, '/')
+    }
+
     return(list(username = username, token = token, endpoint_url = endpoint_url, fastq_extensions = fastq_extensions, output = output))
 }
 
