@@ -1,15 +1,15 @@
 library(httr)
 library(base64enc)
 
-REST_API_VERSION = "api_v1/"
-USER_AUTH_TOKEN_ENDPOINT = "user/auth_token/"
+REST_API_VERSION = "api_x_v1/"
+USER_AUTH_TOKEN_ENDPOINT = "auth_token/"
 FASTQ_UPLOAD_ENDPOINT = "fq_file_upload/"
-FQ_DATASET_ENDPOINT = "fq_dataset/token/"
-FQ_FILE_ENDPOINT = "fq_file/token/"
-FQ_ATTACHMENT_ENDPOINT = "fq_attachment/token/"
-PROJECT_ENDPOINT = "project/token/"
-PROJECT_ATTACHMENT_ENDPOINT = "project_attachment/token/"
-
+FQ_DATASET_ENDPOINT = "fq_dataset/"
+FQ_FILE_ENDPOINT = "fq_file/"
+FQ_ATTACHMENT_ENDPOINT = "fq_attachment/"
+PROJECT_ENDPOINT = "project/"
+PROJECT_ATTACHMENT_ENDPOINT = "project_attachment/"
+PRO_DATA_ENDPOINT = "pro_data/"
 
 #' test_server_connection
 #'
@@ -54,11 +54,8 @@ auth_user_token <- function(username, token, endpoint_url) {
     # Construct the authentication endpoint URL
     auth_endpoint <- file.path(endpoint_url, USER_AUTH_TOKEN_ENDPOINT, fsep = "")
     
-    # Prepare the payload
-    payload <- list(username = username, token = token)
-    
     # Send a POST request
-    res <- httr::POST(auth_endpoint, body = payload, encode = "json")
+    res <- httr::POST(auth_endpoint, authenticate(username, token), encode = "json")
     
     # Check the status code
     if (httr::status_code(res) != 200) {
@@ -115,11 +112,14 @@ upload_fastq_rs <- function(client, fastq_files) {
             stop(paste("No read permissions for path", fq_path))
         }
         
-        json_payload = list(username = client$username,
-                            token = client$token,
-                            fq_file_path = fq_path)
+        json_payload = list(fq_file_path = fq_path)
 
-        res <- httr::POST(fq_upload_endpoint, body = json_payload, encode = "json")
+        res <- httr::POST(fq_upload_endpoint,
+                            body = json_payload,
+                            config = authenticate(client$username, client$token),
+                            encode = "json")
+
+        print(httr::content(res, "parsed"))
 
         if (!(httr::status_code(res) %in% c(200, 204))) {
             stop("upload_fastq failed")
@@ -137,10 +137,9 @@ upload_fastq_rs <- function(client, fastq_files) {
 get_fq_file_rs <- function(client, fq_file_id) {
 
     fq_file_endpoint = file.path(client$endpoint_url, FQ_FILE_ENDPOINT, fsep = "")
+    fq_file_endpoint = file.path(fq_file_endpoint, fq_file_id, '/', fsep = "")
 
-    json_payload = list(username = client$username, token = client$token, fq_file_id = fq_file_id)
-
-    res <- httr::POST(fq_file_endpoint, body = json_payload, encode = "json")
+    res <- httr::GET(fq_file_endpoint,authenticate(client$username, client$token), encode = "json")
 
     if (!(httr::status_code(res) %in% c(200, 204))) {
         stop("get_fq_file Failed")
@@ -194,7 +193,7 @@ list_fastq_datasets_rs <- function(client, project_id = NULL, project_name = NUL
 
     fq_dataset_endpoint = file.path(client$endpoint_url, FQ_DATASET_ENDPOINT, fsep = "")
 
-    json_payload = list(username = client$username, token = client$token)
+    json_payload = list()
 
     if (!is.null(project_name)) {
         json_payload$project_name = project_name
@@ -203,7 +202,10 @@ list_fastq_datasets_rs <- function(client, project_id = NULL, project_name = NUL
         json_payload$project_id = project_id
     }
 
-    res <- httr::POST(fq_dataset_endpoint, body = json_payload, encode = "json")
+    res <- httr::GET(fq_dataset_endpoint,
+                    query = json_payload,
+                    authenticate(client$username, client$token),
+                    encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
         stop("list_fastq_datasets Failed")
@@ -231,21 +233,25 @@ get_fastq_dataset_rs <- function(client, dataset_id = NULL, dataset_name = NULL)
         stop("dataset_id or dataset_name required")
     }
 
-    json_payload = list(username = client$username, token = client$token)
+    json_payload = list()
 
     if (!is.null(dataset_id)) {
-        json_payload$dataset_id = dataset_id
+        json_payload$id = dataset_id
     }
     if (!is.null(dataset_name)) {
-        json_payload$dataset_name = dataset_name
+        json_payload$name = dataset_name
     }
 
-    res <- httr::POST(fq_dataset_endpoint, body = json_payload, encode = "json")
+    res <- httr::GET(fq_dataset_endpoint,
+                    query = json_payload,
+                    authenticate(client$username, client$token),
+                    encode = "json")
     
     if (!(httr::status_code(res) %in% c(200,204))) {
         stop("get_fastq_dataset Failed")
     } else {
         json = httr::content(res, "parsed")
+
         if (length(json) == 0) {
             return(list())
         } else if (length(json) == 1) {
@@ -266,9 +272,9 @@ list_projects_rs <- function(client) {
 
     project_endpoint = file.path(client$endpoint_url, PROJECT_ENDPOINT, fsep = "")
 
-    json_payload = list(username = client$username, token = client$token)
-
-    res <- httr::POST(project_endpoint, body = json_payload, encode = "json")
+    res <- httr::GET(project_endpoint,
+                    authenticate(client$username, client$token),
+                    encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
         stop("list_projects failed")
@@ -296,16 +302,19 @@ get_project_rs <- function(client, project_id = NULL, project_name = NULL) {
         stop("project_id or project_name required")
     }
 
-    json_payload = list(username = client$username, token = client$token)
+    json_payload = list()
 
     if (!is.null(project_id)) {
-        json_payload$project_id = project_id
+        json_payload$id = project_id
     }
     if (!is.null(project_name)) {
-        json_payload$project_name = project_name
+        json_payload$name = project_name
     }
 
-    res <- httr::POST(project_endpoint, body = json_payload, encode = "json")
+    res <- httr::GET(project_endpoint,
+                    query = json_payload,
+                    authenticate(client$username, client$token),
+                    encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
         stop("get_project failed")
@@ -345,9 +354,7 @@ download_project_attachment_rs <- function(client,
         stop("project_id or project_name required")
     }
 
-    json_payload = list(username = client$username,
-                        token = client$token,
-                        attachment_name = attachment_name)         
+    json_payload = list(attachment_name = attachment_name)         
 
     if (!is.null(project_id)) {
         json_payload$project_id = project_id
@@ -356,7 +363,10 @@ download_project_attachment_rs <- function(client,
         json_payload$project_name = project_name
     }
 
-    res <- httr::POST(project_attachment_endpoint, body = json_payload, encode = "json")
+    res <- httr::GET(project_attachment_endpoint,
+                    query = json_payload,
+                    authenticate(client$username, client$token),
+                    encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
         stop("get_project failed")
@@ -372,7 +382,6 @@ download_project_attachment_rs <- function(client,
             stop("download_project_attachment: Multiple attachments found with name")
         }
     }
-
 }
 
 #' download_fq_dataset_attachment_rs
@@ -387,10 +396,10 @@ download_project_attachment_rs <- function(client,
 #' @param dataset_id Project ID to return
 #' @param dataset_name Project name to return
 download_fq_dataset_attachment_rs <- function(client,
-                                        attachment_name,
-                                        outpath,
-                                        dataset_id = NULL,
-                                        dataset_name = NULL) {
+                                            attachment_name,
+                                            outpath,
+                                            dataset_id = NULL,
+                                            dataset_name = NULL) {
 
     fq_attach_endpoint = file.path(client$endpoint_url, FQ_ATTACHMENT_ENDPOINT, fsep = "")
     
@@ -398,9 +407,7 @@ download_fq_dataset_attachment_rs <- function(client,
         stop("dataset_id or dataset_name required")
     }
 
-    json_payload = list(username = client$username,
-                        token = client$token,
-                        attachment_name = attachment_name)         
+    json_payload = list(attachment_name = attachment_name)         
 
     if (!is.null(dataset_id)) {
         json_payload$dataset_id = dataset_id
@@ -409,7 +416,66 @@ download_fq_dataset_attachment_rs <- function(client,
         json_payload$dataset_name = dataset_name
     }
 
-    res <- httr::POST(fq_attach_endpoint, body = json_payload, encode = "json")
+    res <- httr::GET(fq_attach_endpoint,
+                    query = json_payload,
+                    authenticate(client$username, client$token),
+                    encode = "json")
+
+    if (!(httr::status_code(res) %in% c(200,204))) {
+        stop("download_fq_dataset_attachment failed")
+    } else {
+        json = httr::content(res, "parsed")
+        if (length(json) == 0) {
+            stop("download_fq_dataset_attachment: Attachment not found")
+        } else if (length(json) == 1) {
+            attachment <- json[[1]]
+            binary_data <- base64enc::base64decode(attachment$body)
+            writeBin(binary_data, outpath)
+        } else {
+            stop("download_fq_dataset_attachment: Multiple attachments found with name")
+        }
+    }
+}
+
+
+
+#' download_fq_dataset_attachment_rs
+#'
+#' Download dataset attachment from the ReadStore API
+#' Write the attachment to a file
+#' ID or Name must be provided
+#' 
+#' @param client ReadStore client
+#' @param attachment_name Attachment name to download
+#' @param outpath Path to write the attachment
+#' @param dataset_id Project ID to return
+#' @param dataset_name Project name to return
+upload_pro_data_rs <- function(client,
+                                name,
+                                pro_data_path,
+                                data_type,
+                                dataset_id = NULL,
+                                dataset_name = NULL) {
+                                    
+    fq_attach_endpoint = file.path(client$endpoint_url, FQ_ATTACHMENT_ENDPOINT, fsep = "")
+    
+    if (is.null(dataset_id) & is.null(dataset_name)) {
+        stop("dataset_id or dataset_name required")
+    }
+
+    json_payload = list(attachment_name = attachment_name)         
+
+    if (!is.null(dataset_id)) {
+        json_payload$dataset_id = dataset_id
+    }
+    if (!is.null(dataset_name)) {
+        json_payload$dataset_name = dataset_name
+    }
+
+    res <- httr::GET(fq_attach_endpoint,
+                    query = json_payload,
+                    authenticate(client$username, client$token),
+                    encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
         stop("download_fq_dataset_attachment failed")
