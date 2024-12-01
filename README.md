@@ -25,7 +25,7 @@ Happy analysis :)
 - [License](#license)
 - [Credits and Acknowledgments](#acknowledgments)
 
-## The Lean Solution for Managing FASTQ and NGS Data
+## The Lean Solution for Managing NGS and Omics Data
 
 ReadStore is a platform for storing, managing, and integrating omics data. It speeds up analysis and offers a simple way of managing and sharing NGS omics datasets, metadata and processed data (**Pro**cessed **Data**).
 Built-in project and metadata management structures your workflows and a collaborative user interface enhances teamwork — so you can focus on generating insights.
