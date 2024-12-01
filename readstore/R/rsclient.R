@@ -1,5 +1,6 @@
 library(httr)
 library(base64enc)
+library(jsonlite)
 
 REST_API_VERSION = "api_x_v1/"
 USER_AUTH_TOKEN_ENDPOINT = "auth_token/"
@@ -10,6 +11,24 @@ FQ_ATTACHMENT_ENDPOINT = "fq_attachment/"
 PROJECT_ENDPOINT = "project/"
 PROJECT_ATTACHMENT_ENDPOINT = "project_attachment/"
 PRO_DATA_ENDPOINT = "pro_data/"
+
+
+#' validate_charset
+#'
+#' Check if the query string contains only allowed characters
+#' Allowed characters are: 0-9, a-z, A-Z, _, -, ., @
+#' 
+#' @param query_str String to validate 
+#' @return TURE if valid charset, FALSE otherwise
+validate_charset <- function(query_str) {
+  # Validate charset for query string
+  
+  allowed <- c(0:9, letters, LETTERS, '_', '-', '.', '@')
+  allowed <- unique(allowed)
+  
+  return(all(strsplit(query_str, NULL)[[1]] %in% allowed))
+}
+
 
 #' test_server_connection
 #'
@@ -55,7 +74,7 @@ auth_user_token <- function(username, token, endpoint_url) {
     auth_endpoint <- file.path(endpoint_url, USER_AUTH_TOKEN_ENDPOINT, fsep = "")
     
     # Send a POST request
-    res <- httr::POST(auth_endpoint, authenticate(username, token), encode = "json")
+    res <- httr::POST(auth_endpoint, httr::authenticate(username, token), encode = "json")
     
     # Check the status code
     if (httr::status_code(res) != 200) {
@@ -96,34 +115,51 @@ get_rs_client <- function(username, token, endpoint_url) {
 #' Upload fastq files to the ReadStore API
 #' 
 #' @param client ReadStore client
-#' @param fastq_files vector of fastq files to upload
-upload_fastq_rs <- function(client, fastq_files) {
+#' @param fastq_file string or vector of fastq files to upload
+#' @param fastq_name optional string or vector of fastq names to upload
+#' @param read_type optional string or vector of read types to upload
+upload_fastq_rs <- function(client,
+                            fastq_file,
+                            fastq_name = NULL,
+                            read_type = NULL) {
 
     fq_upload_endpoint = file.path(client$endpoint_url, FASTQ_UPLOAD_ENDPOINT, fsep = "")
+        
+    fq_path = normalizePath(fastq_file)
+
+    json_payload = list(fq_file_path = fq_path)
+
+    if (!is.null(fastq_name)) {
+        if (fastq_name == "") {
+            stop("fastq_name cannot be empty")
+        } 
+        if (!validate_charset(fastq_name)) {
+            stop("fastq_name contains invalid characters")
+        }
+        json_payload$fq_file_name = fastq_name
+    }
+
+    if (!is.null(read_type)) {
+        if (!(read_type %in% c("R1","R2","I1","I2"))) {
+            stop("Invalid Read Type")
+        }
+        json_payload$read_type = read_type
+    }
+
+    if (!(file.exists(fq_path))) {
+        stop(paste("fastq file not found for path", fq_path))
+    }
+    if (file.access(fq_path, mode=4) != 0) {
+        stop(paste("No read permissions for path", fq_path))
+    }
     
-    for(fq in fastq_files) {
-        
-        fq_path = normalizePath(fq)
+    res <- httr::POST(fq_upload_endpoint,
+                        body = json_payload,
+                        config = httr::authenticate(client$username, client$token),
+                        encode = "json")
 
-        if (!(file.exists(fq_path))) {
-            stop(paste("fastq file not found for path", fq_path))
-        }
-        if (file.access(fq_path,mode=4) != 0) {
-            stop(paste("No read permissions for path", fq_path))
-        }
-        
-        json_payload = list(fq_file_path = fq_path)
-
-        res <- httr::POST(fq_upload_endpoint,
-                            body = json_payload,
-                            config = authenticate(client$username, client$token),
-                            encode = "json")
-
-        print(httr::content(res, "parsed"))
-
-        if (!(httr::status_code(res) %in% c(200, 204))) {
-            stop("upload_fastq failed")
-        }
+    if (!(httr::status_code(res) %in% c(200, 204))) {
+        stop("upload_fastq failed")
     }
 }
 
@@ -139,7 +175,7 @@ get_fq_file_rs <- function(client, fq_file_id) {
     fq_file_endpoint = file.path(client$endpoint_url, FQ_FILE_ENDPOINT, fsep = "")
     fq_file_endpoint = file.path(fq_file_endpoint, fq_file_id, '/', fsep = "")
 
-    res <- httr::GET(fq_file_endpoint,authenticate(client$username, client$token), encode = "json")
+    res <- httr::GET(fq_file_endpoint,httr::authenticate(client$username, client$token), encode = "json")
 
     if (!(httr::status_code(res) %in% c(200, 204))) {
         stop("get_fq_file Failed")
@@ -204,7 +240,7 @@ list_fastq_datasets_rs <- function(client, project_id = NULL, project_name = NUL
 
     res <- httr::GET(fq_dataset_endpoint,
                     query = json_payload,
-                    authenticate(client$username, client$token),
+                    httr::authenticate(client$username, client$token),
                     encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
@@ -244,7 +280,7 @@ get_fastq_dataset_rs <- function(client, dataset_id = NULL, dataset_name = NULL)
 
     res <- httr::GET(fq_dataset_endpoint,
                     query = json_payload,
-                    authenticate(client$username, client$token),
+                    httr::authenticate(client$username, client$token),
                     encode = "json")
     
     if (!(httr::status_code(res) %in% c(200,204))) {
@@ -273,7 +309,7 @@ list_projects_rs <- function(client) {
     project_endpoint = file.path(client$endpoint_url, PROJECT_ENDPOINT, fsep = "")
 
     res <- httr::GET(project_endpoint,
-                    authenticate(client$username, client$token),
+                    httr::authenticate(client$username, client$token),
                     encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
@@ -313,7 +349,7 @@ get_project_rs <- function(client, project_id = NULL, project_name = NULL) {
 
     res <- httr::GET(project_endpoint,
                     query = json_payload,
-                    authenticate(client$username, client$token),
+                    httr::authenticate(client$username, client$token),
                     encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
@@ -365,7 +401,7 @@ download_project_attachment_rs <- function(client,
 
     res <- httr::GET(project_attachment_endpoint,
                     query = json_payload,
-                    authenticate(client$username, client$token),
+                    httr::authenticate(client$username, client$token),
                     encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
@@ -418,7 +454,7 @@ download_fq_dataset_attachment_rs <- function(client,
 
     res <- httr::GET(fq_attach_endpoint,
                     query = json_payload,
-                    authenticate(client$username, client$token),
+                    httr::authenticate(client$username, client$token),
                     encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
@@ -439,31 +475,46 @@ download_fq_dataset_attachment_rs <- function(client,
 
 
 
-#' download_fq_dataset_attachment_rs
+#' upload_pro_data_rs
 #'
-#' Download dataset attachment from the ReadStore API
-#' Write the attachment to a file
-#' ID or Name must be provided
+#' Upload ProData entry using the ReadStore API
+#' Dataset ID or Name must be provided to select the dataset to attach
+#' 
+#' Return 403 if the user does not have permission to upload ProData
 #' 
 #' @param client ReadStore client
-#' @param attachment_name Attachment name to download
-#' @param outpath Path to write the attachment
-#' @param dataset_id Project ID to return
-#' @param dataset_name Project name to return
+#' @param name Name of ProData entry
+#' @param pro_data_path Path to the ProData file
+#' @param data_type Data type of the ProData entry
+#' @param metadata Metadata key value list
+#' @param description Description of the ProData entry
+#' @param dataset_id Dataset ID to attach the ProData entry
+#' @param dataset_name Dataset name to attach the ProData entry
 upload_pro_data_rs <- function(client,
                                 name,
                                 pro_data_path,
                                 data_type,
+                                metadata = list(),
+                                description = "",
                                 dataset_id = NULL,
                                 dataset_name = NULL) {
-                                    
-    fq_attach_endpoint = file.path(client$endpoint_url, FQ_ATTACHMENT_ENDPOINT, fsep = "")
+
+    pro_data_endpoint = file.path(client$endpoint_url, PRO_DATA_ENDPOINT, fsep = "")
     
     if (is.null(dataset_id) & is.null(dataset_name)) {
         stop("dataset_id or dataset_name required")
     }
 
-    json_payload = list(attachment_name = attachment_name)         
+    pro_data_path = normalizePath(pro_data_path)
+
+    json_payload = list(name = name,
+                        data_type = data_type,
+                        upload_path = pro_data_path,
+                        description = description)           
+
+    if (length(metadata) > 0) {
+        json_payload$metadata = metadata
+    }
 
     if (!is.null(dataset_id)) {
         json_payload$dataset_id = dataset_id
@@ -472,23 +523,208 @@ upload_pro_data_rs <- function(client,
         json_payload$dataset_name = dataset_name
     }
 
-    res <- httr::GET(fq_attach_endpoint,
+    res <- httr::POST(pro_data_endpoint,
+                    body = json_payload,
+                    config = httr::authenticate(client$username, client$token),
+                    encode = "json")
+
+    if (httr::status_code(res) == 403) {
+        json = httr::content(res, "parsed")
+        stop(paste("Upload ProData Failed:", json$detail))
+    }
+    else if (!(httr::status_code(res) %in% c(201,204))) {
+        stop("upload_pro_data failed")
+    }
+}
+
+
+#' list_pro_data_rs
+#'
+#' Get list of ProData entries from the ReadStore API
+#' include_archived flag also shows archived entries 
+#' 
+#' @param client ReadStore client
+#' @param project_id Project ID to filter
+#' @param project_name Project name to filter
+#' @param dataset_id Dataset ID to filter
+#' @param dataset_name Dataset name to filter
+#' @param name Name of ProData entry to filter
+#' @param data_type Data type of ProData entry to filter
+#' @param include_archived Include archived entries (bool)
+#' @return (json) list of ProData entries
+list_pro_data_rs <- function(client,
+                            project_id = NULL,
+                            project_name = NULL,
+                            dataset_id = NULL,
+                            dataset_name = NULL,
+                            name = NULL,
+                            data_type = NULL,
+                            include_archived = FALSE) {
+                            
+    pro_data_endpoint = file.path(client$endpoint_url, PRO_DATA_ENDPOINT, fsep = "")
+    
+    json_payload = list(
+        project_id = project_id,
+        project_name = project_name,
+        dataset_id = dataset_id,
+        dataset_name = dataset_name,
+        name = name,
+        data_type = data_type
+    )
+
+    if (include_archived==FALSE) {
+        json_payload$valid = TRUE
+    }
+
+    res <- httr::GET(pro_data_endpoint,
                     query = json_payload,
-                    authenticate(client$username, client$token),
+                    httr::authenticate(client$username, client$token),
                     encode = "json")
 
     if (!(httr::status_code(res) %in% c(200,204))) {
-        stop("download_fq_dataset_attachment failed")
+        stop("list_pro_data failed")
+    }
+
+    json = httr::content(res, "parsed")
+
+    return(json)
+}
+
+
+#' get_pro_data_rs
+#'
+#' Get single ProData entry from the ReadStore API
+#' Return by ProData Id or combination of Name and Dataset ID or Name 
+#' If version is NULL, return the latest valid version
+#' 
+#' @param client ReadStore client
+#' @param pro_data_id ProData ID to return
+#' @param name Name of ProData entry to filter
+#' @param version Version of ProData entry to filter
+#' @param dataset_id Dataset ID to filter
+#' @param dataset_name Dataset name to filter
+#' @return (json) ProData entry
+get_pro_data_rs <- function(client,
+                            pro_data_id = NULL,
+                            name = NULL,
+                            version = NULL,
+                            dataset_id = NULL,
+                            dataset_name = NULL) {
+                            
+    pro_data_endpoint = file.path(client$endpoint_url, PRO_DATA_ENDPOINT, fsep = "")
+    
+    if (is.null(pro_data_id)) {
+        if (is.null(name) | (is.null(dataset_id) & is.null(dataset_name))) {
+            stop("name and dataset_id or dataset_name required")
+        }
+    }
+
+    if (is.null(version)) {
+        valid = 'true'
+    } else {
+        valid = 'false'
+    } 
+    
+    json_payload = list(
+        dataset_id = dataset_id,
+        dataset_name = dataset_name,
+        name = name,
+        version = version,
+        valid = valid,
+        detail = 'true'
+    )
+
+    if (!is.null(pro_data_id)) {
+        pro_data_endpoint = file.path(pro_data_endpoint, pro_data_id, '/', fsep = "")
+        res = httr::GET(pro_data_endpoint,
+                        httr::authenticate(client$username, client$token),
+                        encode = "json")
+    } else {
+        res = httr::GET(pro_data_endpoint,
+                        query = json_payload,
+                        httr::authenticate(client$username, client$token),
+                        encode = "json")
+    }
+
+    if (!(httr::status_code(res) %in% c(200,204))) {
+        stop("list_pro_data failed")
     } else {
         json = httr::content(res, "parsed")
+
         if (length(json) == 0) {
-            stop("download_fq_dataset_attachment: Attachment not found")
+            return(list())
         } else if (length(json) == 1) {
-            attachment <- json[[1]]
-            binary_data <- base64enc::base64decode(attachment$body)
-            writeBin(binary_data, outpath)
+           return(json[[1]])
         } else {
-            stop("download_fq_dataset_attachment: Multiple attachments found with name")
+            stop("get_pro_data: Multiple ProData found")
         }
+    }
+}
+
+
+#' delete_pro_data_rs
+#'
+#' Delete ProData entry from ReadStore
+#' Delete by ProData Id or combination of Name and Dataset ID or Name 
+#' If version is NULL, delete the latest valid version
+#' 
+#' @param client ReadStore client
+#' @param pro_data_id ProData ID to return
+#' @param name Name of ProData entry to filter
+#' @param dataset_id Dataset ID to filter
+#' @param dataset_name Dataset name to filter
+#' @param version Version of ProData entry to filter
+delete_pro_data_rs <- function(client,
+                                pro_data_id = NULL,
+                                name = NULL,
+                                dataset_id = NULL,
+                                dataset_name = NULL,
+                                version = NULL) {
+    
+    pro_data_endpoint = file.path(client$endpoint_url, PRO_DATA_ENDPOINT, fsep = "")
+    
+    if (is.null(pro_data_id)) {
+        if (is.null(name) | (is.null(dataset_id) & is.null(dataset_name))) {
+            stop("name and dataset_id or dataset_name required")
+        }
+    }
+
+    json_payload = list(
+        dataset_id = dataset_id,
+        dataset_name = dataset_name,
+        name = name,
+        version = version
+    )
+
+    if (!is.null(pro_data_id)) {
+        pro_data_endpoint = file.path(pro_data_endpoint, pro_data_id, '/', fsep = "")
+        res = httr::DELETE(pro_data_endpoint,
+                        httr::authenticate(client$username, client$token),
+                        encode = "json")
+    } else {
+        res = httr::DELETE(pro_data_endpoint,
+                            query = json_payload,
+                            httr::authenticate(client$username, client$token),
+                            encode = "json")
+    }
+
+    if (httr::status_code(res) == 400) {
+        json = httr::content(res, "parsed")
+        detail = json$detail
+        if (detail == "ProData not found") {
+            stop("ProData not found")
+        } else {
+            stop(paste("delete_pro_data", detail))
+        }
+    } else if (httr::status_code(res) == 403) {
+        json = httr::content(res, "parsed")
+        detail = json$detail
+        stop(paste("ProData Delete failed", detail))
+    } else if (httr::status_code(res) %in% c(200,204)) {
+        json = httr::content(res, "parsed")
+        pro_data_id = as.integer(json$id)
+        return(pro_data_id)
+    } else {
+        stop("delete_pro_data failed")
     }
 }
