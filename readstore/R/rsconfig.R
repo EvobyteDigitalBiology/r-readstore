@@ -1,4 +1,5 @@
 library(ini)
+library(jsonlite)
 
 #' load_rs_config
 #'
@@ -31,6 +32,8 @@ load_rs_config <- function(
         token <- rs_config$credentials$token
         endpoint_url <- rs_config$general$endpoint_url
         fastq_extensions <- rs_config$general$fastq_extensions
+        fastq_extensions <- gsub("'", "\"", fastq_extensions)
+        fastq_extensions <- jsonlite::fromJSON(fastq_extensions)
         output <- rs_config$general$output
     }
     
