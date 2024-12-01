@@ -300,13 +300,13 @@ download_project_attachment <- function(
         stop("project_id or project_name required")
     }
 
-    project = get_project_rs(client, project_id, project_name)
+    project <- get_project_rs(client, project_id, project_name)
 
     if (length(project) == 0) {
         stop('Project not found')
     }
 
-    attachments = project$attachments
+    attachments <- project$attachments
 
     if (!(attachment_name %in% attachments)) {
         stop('Attachment not found')
@@ -317,7 +317,7 @@ download_project_attachment <- function(
             outpath <- file.path(outpath, attachment_name)
         }
 
-        output_dirname = dirname(outpath)
+        output_dirname <- dirname(outpath)
 
         if ((output_dirname != '') & (!file.exists(output_dirname))) {
             stop(paste0('Output directory does not exists ', output_dirname))
@@ -327,27 +327,230 @@ download_project_attachment <- function(
     }
 }
 
-#' upload_fastq
+
+#' upload_pro_data
 #'
-#' Upload FASTQ files to ReadStore
+#' Upload ProData entry using the ReadStore API
+#' Dataset ID or Name must be provided to select the dataset to attach
+#' 
+#' Return 403 if the user does not have permission to upload ProData
 #' 
 #' @param client ReadStore client
-#' @param fastq FASTQ files to upload as a vector
+#' @param name Name of ProData entry
+#' @param pro_data_path Path to the ProData file
+#' @param data_type Data type of the ProData entry
+#' @param metadata Metadata key value list
+#' @param description Description of the ProData entry
+#' @param dataset_id Dataset ID to attach the ProData entry
+#' @param dataset_name Dataset name to attach the ProData entry
 #' @export
-upload_fastq <- function(client, fastq) {
+upload_pro_data <- function(client,
+                            name,
+                            pro_data_path,
+                            data_type,
+                            metadata = list(),
+                            description = "",
+                            dataset_id = NULL,
+                            dataset_name = NULL) {
+    
+    if (is.null(dataset_id) & is.null(dataset_name)) {
+        stop("dataset_id or dataset_name required")
+    }
 
+    if (!(file.exists(pro_data_path))) {
+        stop('pro_data_path does not exists')
+    }
+    
+    upload_pro_data_rs(client,
+                        name,
+                        pro_data_path,
+                        data_type,
+                        metadata,
+                        description,
+                        dataset_id,
+                        dataset_name)
+}
+
+#' list_pro_data
+#'
+#' Get list of ProData entries from the ReadStore API
+#' include_archived flag also shows archived entries 
+#' 
+#' @param client ReadStore client
+#' @param project_id Project ID to filter
+#' @param project_name Project name to filter
+#' @param dataset_id Dataset ID to filter
+#' @param dataset_name Dataset name to filter
+#' @param name Name of ProData entry to filter
+#' @param data_type Data type of ProData entry to filter
+#' @param include_archived Include archived entries (bool)
+#' @return (json) list of ProData entries
+#' @export
+list_pro_data <- function(client,
+                            project_id = NULL,
+                            project_name = NULL,
+                            dataset_id = NULL,
+                            dataset_name = NULL,
+                            name = NULL,
+                            data_type = NULL,
+                            include_archived = FALSE) {
+    
+    pro_data <- list_pro_data_rs(client,
+                            project_id,
+                            project_name,
+                            dataset_id,
+                            dataset_name,
+                            name,
+                            data_type,
+                            include_archived)
+
+    return(pro_data)
+}
+
+
+#' get_pro_data
+#'
+#' Get single Processed Data (ProData) entry from the ReadStore API
+#' Return by ProData Id or combination of Name and Dataset ID or Name 
+#' If version is NULL, return the latest valid version
+#' 
+#' @param client ReadStore client
+#' @param pro_data_id ProData ID to return
+#' @param name Name of ProData entry to filter
+#' @param version Version of ProData entry to filter
+#' @param dataset_id Dataset ID to filter
+#' @param dataset_name Dataset name to filter
+#' @return (json) ProData entry
+#' @export
+get_pro_data <- function(client,
+                        pro_data_id = NULL,
+                        name = NULL,
+                        version = NULL,
+                        dataset_id = NULL,
+                        dataset_name = NULL) {
+    
+    if (is.null(pro_data_id)) {
+        if (is.null(name) | (is.null(dataset_id) & is.null(dataset_name))) {
+            stop("name and dataset_id or dataset_name required")
+        }
+    }
+
+    pro_data <- get_pro_data_rs(client,
+                        pro_data_id,
+                        name,
+                        version,
+                        dataset_id,
+                        dataset_name)
+
+    return(pro_data)
+}
+
+#' delete_pro_data
+#'
+#' Delete ProData entry from ReadStore
+#' Delete by ProData Id or combination of Name and Dataset ID or Name 
+#' If version is NULL, delete the latest valid version
+#' 
+#' @param client ReadStore client
+#' @param pro_data_id ProData ID to return
+#' @param name Name of ProData entry to filter
+#' @param dataset_id Dataset ID to filter
+#' @param dataset_name Dataset name to filter
+#' @param version Version of ProData entry to filter
+#' @export
+delete_pro_data <- function(client,
+                            pro_data_id = NULL,
+                            name = NULL,
+                            dataset_id = NULL,
+                            dataset_name = NULL,
+                            version = NULL) {
+    
+    if (is.null(pro_data_id)) {
+        if (is.null(name) | (is.null(dataset_id) & is.null(dataset_name))) {
+            stop("name and dataset_id or dataset_name required")
+        }
+    }
+
+    delete_pro_data_rs(client,
+                        pro_data_id,
+                        name,
+                        version,
+                        dataset_id,
+                        dataset_name)
+}
+
+#' upload_fastq
+#'
+#' Upload fastq files (fastq) to the ReadStore API
+#' 
+#' If fastq_name is provided, it must have the same length as fastq
+#' If read_type is provided, it must have the same length as fastq
+#'
+#' Arguments can be provided as strings or vectors 
+#' 
+#' @param client ReadStore client
+#' @param fastq string or vector of fastq files to upload
+#' @param fastq_name optional string or vector of fastq names to upload
+#' @param read_type optional string or vector of read types to upload
+#' @export
+upload_fastq <- function(client, fastq, fastq_name = NULL, read_type = NULL) {
+
+    # Check if fastq is a string, if so cast to vector
+    if (is.character(fastq)) {
+        fastq = c(fastq)
+    }
+    if (is.character(fastq_name)) {
+        fastq_name = c(fastq_name)
+    }
+    if (is.character(read_type)) {
+        read_type = c(read_type)
+    }
+
+    if (!(is.null(fastq_name))) {
+        if (length(fastq) != length(fastq_name)) {
+            stop('fastq and fastq_name must have the same length')
+        }
+    }
+    if (!(is.null(read_type))) {
+        if (length(fastq) != length(read_type)) {
+            stop('fastq and read_type must have the same length')
+        }
+    }
+
+    ix = 1
     upload_files = c()
+    upload_fq_names = c()
+    upload_read_types = c()
+
     for (fq in fastq) {
         if (!(file.exists(fq))) {
             stop(paste('fastq file does not exists', fq))
         }
         
-        if (any(sapply(client$fastq_extensions, function(x) endsWith(fq, x)))) {
+        if (!(any(sapply(client$fastq_extensions, function(x) endsWith(fq, x))))) {          
             stop(paste('fastq file is not a valid FASTQ files ', fq))
-        } 
+        }
 
+        if (!(is.null(fastq_name))) {
+            upload_fq_names = c(upload_fq_names, fastq_name[ix])
+        } else {
+            upload_fq_names = c(upload_fq_names, NULL)
+        }
+
+        if (!(is.null(read_type))) {
+            upload_read_types = c(upload_read_types, read_type[ix])
+        } else {
+            upload_read_types = c(upload_read_types, NULL)
+        }
+        
         upload_files = c(upload_files, fq)
+        ix = ix + 1
     }
 
-    upload_fastq_rs(client, upload_files)
+    # Perform the upload
+    ix = 1
+    for (fq in upload_files) {
+        upload_fastq_rs(client, fq, upload_fq_names[ix], upload_read_types[ix])
+        ix = ix + 1
+    }
 }
