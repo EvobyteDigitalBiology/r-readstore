@@ -7,7 +7,7 @@ The package enables you to automate your bioinformatics pipelines, Python script
 
 Check the [ReadStore Github repository](https://github.com/EvobyteDigitalBiology/readstore) for more information on how to get started with ReadStore and setting up your server.
 
-More infos on the [ReadStore website](#https://evo-byte.com/readstore/)
+More infos on the [ReadStore website](https://evo-byte.com/readstore/)
 
 Tutorials and Intro Videos: https://www.youtube.com/@evobytedigitalbio
 
@@ -16,7 +16,6 @@ Blog posts and How-Tos: https://evo-byte.com/blog/
 For general questions reach out to info@evo-byte.com
 
 Happy analysis :)
-
 
 ## Table of Contents
 - [Description](#description)
@@ -28,10 +27,10 @@ Happy analysis :)
 
 ## The Lean Solution for Managing FASTQ and NGS Data
 
-ReadStore is a platform for storing, managing, and integrating genomic data. It speeds up analysis and offers a simple way of managing and sharing FASTQ and NGS datasets.
+ReadStore is a platform for storing, managing, and integrating omics data. It speeds up analysis and offers a simple way of managing and sharing NGS omics datasets, metadata and processed data (**Pro**cessed **Data**).
 Built-in project and metadata management structures your workflows and a collaborative user interface enhances teamwork — so you can focus on generating insights.
 
-The integrated Webservice enables your to directly retrieve data from ReadStore via the terminal Command-Line-Interface (CLI) or Python/R SDKs.
+The integrated Webservice (API) enables your to directly retrieve data from ReadStore via the terminal [Command-Line-Interface (CLI)](https://github.com/EvobyteDigitalBiology/readstore-cli) or [Python](https://github.com/EvobyteDigitalBiology/pyreadstore) / [R](https://github.com/EvobyteDigitalBiology/r-readstore) SDKs.
 
 The ReadStore Basic version provides a local webserver with a simple user management. If you need an organization-wide deployment, advanced user and group management or cloud integration please check the ReadStore Advanced versions and reach out to info@evo-byte.com.
 
@@ -43,18 +42,17 @@ By importing the readstore package in R, you can quickly retrieve data from a Re
 This tool provides streamlined and standardized access to NGS datasets and metadata, helping you run analyses more efficiently and with fewer errors.
 You can easily scale your pipelines, and if you need to migrate or move NGS data, updating the ReadStore database ensures all your workflows stay up-to-date.
 
-
 ## Security and Permissions<a id="backup"></a>
 
 **PLEASE READ AND FOLLOW THESE INSTRUCTIONS CAREFULLY!**
 
 ### User Accounts and Token<a id="token"></a>
 
-Using r-readstore requires an active user account and a token (and a running ReadStore server). 
+Using **r-readstore** requires an active user account and a token (and a running ReadStore server). 
 
 You should **never enter your user account password** when working with r-readstore.
 
-To retrieve your token:
+To retrieve your token
 
 1. Login to the ReadStore app via your browser
 2. Navigate to `Settings` page and click on `Token`
@@ -82,7 +80,7 @@ by default in your home directory (`~/.readstore/`). Make sure to keep read perm
 ## Installation
 
 In your R environment you can directly install the readstore client from the r-readstore
-[GitHub repository](#https://github.com/EvobyteDigitalBiology/r-readstore)
+[GitHub repository](https://github.com/EvobyteDigitalBiology/r-readstore)
 
 ```r
 # with remotes library
@@ -109,7 +107,7 @@ Detailed tutorials, videos and explanations are found on [YouTube](https://www.y
 Let's access some dataset and project data from the ReadStore database!
 
 Make sure a ReadStore server is running and reachable (by default under `127.0.0.1:8000`).
-You can enter (`http://127.0.0.1:8000/api_v1/`) in your browser and should get a response from the API.
+You can enter (`http://127.0.0.1:8000/api_x_v1/`) in your browser and should get a response from the API.
 
 We assume you ran `readstore configure` before to create a config file for your user.
 If not, consult the [ReadStore CLI](https://github.com/EvobyteDigitalBiology/readstore-cli) README on how to set this up.
@@ -117,39 +115,65 @@ If not, consult the [ReadStore CLI](https://github.com/EvobyteDigitalBiology/rea
 We first will create the R client and perform some operations to retrieve data from the ReadStore database.
 More information on all available methods can be found below.
 
-
 ```r
 library(readstore)
 
 client <- get_client()  # Create an instance of the ReadStore client
 
-datasets = list_datasets(client)          # List all datasets and return json-style list of list
+# Manage Datasets 
 
-datasets_project_1 = list_datasets(client,          # List all datasets for project 1
+datasets <- list_datasets(client)          # List all datasets and return json-style list of list
+
+datasets_project_1 <- list_datasets(client,          # List all datasets for project 1
                                     project_id = 1) # return json-style list of list
                                                     
 
-datasets_id_25 = get_dataset(client,                # Get detailed data for dataset 25
+datasets_id_25 <- get_dataset(client,                # Get detailed data for dataset 25
                              dataset_id = 25)       # return json-style list
 
-fastq_files_dataset_25 = get_fastq(client,          # Get individual fastq files for dataset 25
+fastq_files_dataset_25 <- get_fastq(client,          # Get individual fastq files for dataset 25
                                    dataset_id = 25) # return json-style list of list
-
-projects = list_projects(client)          # List all projects and return json-style list of list
-
-projects = get_project(client,                      # Get details for MyProject
-                       project_name = 'MyProject')  # return json-style list
 
 download_dataset_attachment(client,                 # Download file attached to dataset 25
                             dataset_id = 25,        
                             attachment_name = 'gene_table.tsv') 
 
+# Manage Projects
+
+projects <- list_projects(client)          # List all projects and return json-style list of list
+
+projects <- get_project(client,                      # Get details for MyProject
+                       project_name = 'MyProject')  # return json-style list
+
 download_project_attachment(client,                 # Download file attached to project
                             project_name = 'MyProject'
                             attachment_name = 'project_plan.pptx')
 
-upload_fastq(client, fastq = c('path/to/fastq_R1.fq', 'path/to/fastq_R2.fq'))
+# Upload FASTQ datasets
 
+upload_fastq(client,                                                 # Upload FASTQ files
+            fastq = c('path/to/fastq_R1.fq', 'path/to/fastq_R2.fq'), # Define path to FASTQ  
+            fastq_name = c('sample_R1', 'sample_R2'),                # Set names of FASTQ files
+            read_type = c('R1', 'R2'))                               # Define type of Read
+
+# Manage ProData
+
+upload_pro_data(client,                                         # Upload Processed Data files
+                name = 'sample_1_count_matrix',                 # Set name of count matrix
+                pro_data_path = 'path/to/sample_1_counts.h5',   # Set file path
+                data_type = 'count_matrix',                     # Set type to 'count_matrix'
+                dataset_id = 25)                                # Attach ProData to dataset_id 25
+
+pro_data <- list_pro_data(client,                # List Processed Data (ProData)
+                        dataset_id = 25)        # Get ProData for dataset_id 25
+
+pro_data <- get_pro_data(client,                         # List Get individual ProData entry
+                        name = 'sample_1_count_matrix', # Get ProData with name 'sample_1_count_matrix'
+                        dataset_id = 25)                # Get ProData for dataset_id 25
+
+pro_data <- delete_pro_data(client,                         # Delete ProData
+                           name = 'sample_1_count_matrix', # Get ProData with name 'sample_1_count_matrix'
+                           dataset_id = 25)                # Get ProData for dataset_id 25
 ```
 
 
@@ -185,6 +209,7 @@ The enironment variables precede over other client configurations.
 
     - Connection Error:     If no ReadStore server was found at the provided endpoint
     - Authentication Error: If provided username or token are not found
+    - No Permission to Upload/Delete FASTQ/ProData: User has no [Staging Permissions]
 
 ### Access Datasets
 
@@ -228,7 +253,56 @@ get_project(client,
             project_name = NULL)  # Filter project with name `project_name`
 ```
 
-### Download Attachmeents
+### Access ProData
+
+```r
+# Upload ProData
+
+upload_pro_data(client,
+                name,                # name of ProData entry
+                pro_data_path,       # Path to Processed Data file
+                data_type,           # Type of dataset (e.g. count_matrix)
+                metadata = list(),   # Metadata key values list for ProData
+                description = "",    # Set description
+                dataset_id = NULL,   # Dataset ID to attach ProData to 
+                dataset_name = NULL) # Dataset Name to attach ProData to
+
+# List ProData
+
+list_pro_data(client,
+                project_id = NULL,       # Filter by Project ID
+                project_name = NULL,     # Filter by Project Name
+                dataset_id = NULL,       # Filter by Dataset ID
+                dataset_name = NULL,     # Filter by Dataset Name
+                name = NULL,             # Filter by Name
+                data_type = NULL,        # Filter by Data Type
+                include_archived = FALSE)# Return archived ProData 
+
+# Get ProData
+
+get_pro_data(client,
+            pro_data_id = NULL,     # Get ProData by ID
+            name = NULL,            # Get ProData by Name
+            version = NULL,         # Get Specific Version
+            dataset_id = NULL,      # Get ProData by dataset_id
+            dataset_name = NULL)    # Get ProData by dataset_name
+
+# Must provide pro_data_id OR (dataset_name/dataset_id and name)
+
+# Delete ProData
+
+delete_pro_data(client,                 
+                pro_data_id = NULL,  # Get ProData by ID
+                name = NULL,         # Get ProData by Name    
+                dataset_id = NULL,   # Get ProData by dataset_id
+                dataset_name = NULL, # Get ProData by dataset_name
+                version = NULL)      # Set specific version to delete
+
+# Must provide pro_data_id OR (dataset_name/dataset_id and name)
+```
+
+
+### Download Attachments
 
 ```r 
 # Download project attachment file from ReadStore Database
@@ -261,7 +335,10 @@ Upload FASTQ files to ReadStore server. The methods checks if the FASTQ files ex
 ```r 
 # Upload FASTQ files to ReadStore 
 
-upload_fastq(client, fastq = c('myfastq_r1.fq', 'myfastq_r2.fq'))  # Vector of FASTQ file path to upload
+upload_fastq(client,                                         
+             fastq,             # Path to FASTQ file (string/vector)
+             fastq_name = NULL, # Names of FASTQ files (string/vector)
+             read_type = NULL)  # Read Types (string/vector)
 ```
 
 ## Contributing
@@ -294,3 +371,4 @@ r-readstore is built upon the following open-source python packages and would li
 - httr (https://httr.r-lib.org/)
 - base64enc (https://github.com/s-u/base64enc)
 - ini (https://cran.r-project.org/web/packages/ini/index.html)
+- jsonlite (https://cran.r-project.org/web/packages/jsonlite/index.html)
