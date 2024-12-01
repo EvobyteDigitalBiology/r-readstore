@@ -4,12 +4,16 @@
 \alias{upload_fastq_rs}
 \title{upload_fastq_rs}
 \usage{
-upload_fastq_rs(client, fastq_files)
+upload_fastq_rs(client, fastq_file, fastq_name = NULL, read_type = NULL)
 }
 \arguments{
 \item{client}{ReadStore client}
 
-\item{fastq_files}{vector of fastq files to upload}
+\item{fastq_file}{string or vector of fastq files to upload}
+
+\item{fastq_name}{optional string or vector of fastq names to upload}
+
+\item{read_type}{optional string or vector of read types to upload}
 }
 \description{
 Upload fastq files to the ReadStore API
