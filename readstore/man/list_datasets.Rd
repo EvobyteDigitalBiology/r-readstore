@@ -8,7 +8,7 @@ list_datasets(
   client,
   project_id = NULL,
   project_name = NULL,
-  return_type = NULL
+  return_type = "data.frame"
 )
 }
 \arguments{
@@ -18,10 +18,10 @@ list_datasets(
 
 \item{project_name}{Project name to filter datasets for}
 
-\item{return_type}{The return type (currently only json)}
+\item{return_type}{The return type (list | data.frame)}
 }
 \value{
-(json) list of fastq datasets
+data.frame or list of datasets
 }
 \description{
 Get list of fastq datasets from the ReadStore API

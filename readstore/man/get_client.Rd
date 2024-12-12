@@ -10,7 +10,6 @@ get_client(
   token = NULL,
   host = "http://localhost",
   port = 8000,
-  return_type = "json",
   fastq_extensions = c(".fastq", ".fastq.gz", ".fq", ".fq.gz")
 )
 }
@@ -24,8 +23,6 @@ get_client(
 \item{host}{Host to connect to}
 
 \item{port}{Port to connect to}
-
-\item{return_type}{The return type to use for the API calls}
 
 \item{fastq_extensions}{FASTQ file extensions to use}
 }

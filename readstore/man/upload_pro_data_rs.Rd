@@ -7,7 +7,7 @@
 upload_pro_data_rs(
   client,
   name,
-  pro_data_path,
+  pro_data_file,
   data_type,
   metadata = list(),
   description = "",
@@ -20,8 +20,6 @@ upload_pro_data_rs(
 
 \item{name}{Name of ProData entry}
 
-\item{pro_data_path}{Path to the ProData file}
-
 \item{data_type}{Data type of the ProData entry}
 
 \item{metadata}{Metadata key value list}
@@ -31,6 +29,8 @@ upload_pro_data_rs(
 \item{dataset_id}{Dataset ID to attach the ProData entry}
 
 \item{dataset_name}{Dataset name to attach the ProData entry}
+
+\item{pro_data_path}{Path to the ProData file}
 }
 \description{
 Upload ProData entry using the ReadStore API

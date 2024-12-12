@@ -4,15 +4,15 @@
 \alias{list_projects}
 \title{list_projects}
 \usage{
-list_projects(client, return_type = NULL)
+list_projects(client, return_type = "data.frame")
 }
 \arguments{
 \item{client}{ReadStore client}
 
-\item{return_type}{The return type (currently only json)}
+\item{return_type}{The return type  (list | data.frame)}
 }
 \value{
-(json) list of projects (list objects)
+data.frame or list of projects
 }
 \description{
 Get list of projects from the ReadStore API

@@ -4,7 +4,12 @@
 \alias{get_dataset}
 \title{get_dataset}
 \usage{
-get_dataset(client, dataset_id = NULL, dataset_name = NULL, return_type = NULL)
+get_dataset(
+  client,
+  dataset_id = NULL,
+  dataset_name = NULL,
+  return_type = "list"
+)
 }
 \arguments{
 \item{client}{ReadStore client}
@@ -13,7 +18,7 @@ get_dataset(client, dataset_id = NULL, dataset_name = NULL, return_type = NULL)
 
 \item{dataset_name}{Dataset name to return}
 
-\item{return_type}{The return type (currently only json)}
+\item{return_type}{The return type (currently only list)}
 }
 \value{
 json object (list) with fastq dataset
