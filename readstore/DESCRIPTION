@@ -1,6 +1,6 @@
 Package: readstore
 Title: This is the R client (SDK) for the ReadStore API
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: 
     person("Jonathan", "Alles", , "jonathan.alles@evo-byte.com", role = c("aut", "cre"))
 Description: The readstore package can be used to access projects, datasets, metadata, processed data and attachment files in the ReadStore Database from R code and scripts.
