@@ -474,7 +474,6 @@ download_fq_dataset_attachment_rs <- function(client,
 }
 
 
-
 #' upload_pro_data_rs
 #'
 #' Upload ProData entry using the ReadStore API
@@ -492,7 +491,7 @@ download_fq_dataset_attachment_rs <- function(client,
 #' @param dataset_name Dataset name to attach the ProData entry
 upload_pro_data_rs <- function(client,
                                 name,
-                                pro_data_path,
+                                pro_data_file,
                                 data_type,
                                 metadata = list(),
                                 description = "",
@@ -505,11 +504,11 @@ upload_pro_data_rs <- function(client,
         stop("dataset_id or dataset_name required")
     }
 
-    pro_data_path = normalizePath(pro_data_path)
+    pro_data_file = normalizePath(pro_data_file)
 
     json_payload = list(name = name,
                         data_type = data_type,
-                        upload_path = pro_data_path,
+                        upload_path = pro_data_file,
                         description = description)           
 
     if (length(metadata) > 0) {
