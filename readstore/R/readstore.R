@@ -1,4 +1,4 @@
-RETURN_TYPES = c('json')
+RETURN_TYPES = c('list', 'data.frame')
 
 #' check_return_type
 #' 
@@ -11,6 +11,34 @@ check_return_type <- function(return_type) {
     }
 }
 
+
+#' get_metadata_df
+#' 
+#' Return metadata entries from a list and cast to a data frame
+#' Metadata is key value pairs and key values are used to 
+#' construct the data.frame names
+#' 
+#' @param input_list List of metadata entries
+#' @return data.frame with metadata entries
+get_metadata_df <- function(input_list) {
+  
+  # Extract metadata as a list
+  metadata <- lapply(input_list, function(x) x$metadata)
+  all_keys <- unique(unlist(lapply(metadata, names)))
+  
+  # Convert the metadata to a data frame
+  metadata_df <- do.call(rbind, lapply(metadata, function(x) {
+    # Create a named vector with NA for missing keys
+    row <- setNames(rep(NA, length(all_keys)), all_keys)
+    # Populate the row with existing values
+    row[names(x)] <- x
+    return(as.data.frame(as.list(row), stringsAsFactors = FALSE))
+  }))  
+  
+  return(metadata_df)
+}
+
+
 #' get_client
 #'
 #' Get ReadStore client to interact with ReadStore API.
@@ -22,7 +50,6 @@ check_return_type <- function(return_type) {
 #' @param token Token to use for authentication
 #' @param host Host to connect to
 #' @param port Port to connect to
-#' @param return_type The return type to use for the API calls
 #' @param fastq_extensions FASTQ file extensions to use
 #' @return ReadStore client (list)
 #' @export
@@ -31,12 +58,9 @@ get_client <- function(config_dir = '~/.readstore',
                         token = NULL,
                         host = 'http://localhost',
                         port = 8000,
-                        return_type = 'json',
                         fastq_extensions = c('.fastq','.fastq.gz','.fq','.fq.gz')) {
 
     endpoint <- paste0(paste(host, port, sep=':'),'/')
-
-    check_return_type(return_type)
 
     if (xor(!(is.null(username)),(!(is.null(username))))) {
         stop('Both Username and Token must be provided')
@@ -96,7 +120,6 @@ get_client <- function(config_dir = '~/.readstore',
     )
 
     rs_client$fastq_extensions = fastq_extensions
-    rs_client$return_type = return_type
 
     return(rs_client)
 }
@@ -109,17 +132,97 @@ get_client <- function(config_dir = '~/.readstore',
 #' @param client ReadStore client
 #' @param project_id Project ID to filter datasets for
 #' @param project_name Project name to filter datasets for
-#' @param return_type The return type (currently only json)
-#' @return (json) list of fastq datasets
+#' @param return_type The return type (list | data.frame)
+#' @return data.frame or list of datasets
 #' @export
 list_datasets <- function(client,
                         project_id = NULL,
                         project_name = NULL,
-                        return_type = NULL) {
+                        return_type = 'data.frame') {
+    
+    check_return_type(return_type)
 
-    fq_datasets = list_fastq_datasets_rs(client,project_id,project_name)
+    fq_datasets = list_fastq_datasets_rs(client, project_id, project_name)
+    
+    if (return_type == 'data.frame') {
+        
+        # Return empty data.frame if no datasets found
+        if (length(fq_datasets) == 0) {
+            return(data.frame())
+        } else {
+            # Extract project metadata
+            metadata <- lapply(fq_datasets, function(x) x$metadata) 
+            # Extract project attachments
+            attachments <- lapply(fq_datasets, function(x) x$attachments) 
+            # Extract project
+            project_names <- lapply(fq_datasets, function(x) as.character(x$project_names)) 
+            # Extract project
+            project_ids <- lapply(fq_datasets, function(x) as.integer(x$project_ids))
 
-    return(fq_datasets)
+            # Flatten the dataset list
+            # Extract id, name, description, paired_end, index_read metrics
+            flattened_df <- do.call(rbind, lapply(fq_datasets, function(x) {
+                data.frame(
+                    id = x$id,
+                    name = x$name,
+                    description = x$qc_passed,
+                    paired_end = x$paired_end,
+                    index_read = x$index_read,
+                    stringsAsFactors = FALSE
+                    )
+                }))
+
+            # Add metadata to the data.frame
+            flattened_df$project_ids <- I(project_ids)
+            flattened_df$project_names <- I(project_names)
+
+            flattened_df$metadata <- I(metadata)
+            flattened_df$attachments <- I(attachments)
+
+            return(flattened_df)
+        }
+    } else {
+        return(fq_datasets)
+    }
+}
+
+
+#' list_datasets_metadata
+#'
+#' Return metadata for datasets from the ReadStore API
+#' Order of returned metadata is the same as the dataset list
+#' 
+#' Return a list of metadata entries for each dataset
+#' 
+#' or return a data.frame with metadata entries
+#' Here metadata keys will be cast to column names (wide format)
+#' 
+#' @param client ReadStore client
+#' @param project_id Subset metadata for a project ID
+#' @param project_name Subset metadata for a project name
+#' @param return_type The return type (data.frame | list)
+#' @return data.frame or list of datasets of metadata
+#' @export
+list_datasets_metadata <- function(client,
+                                    project_id = NULL,
+                                    project_name = NULL,
+                                    return_type = 'data.frame') {
+
+    check_return_type(return_type)                
+
+    fq_datasets = list_fastq_datasets_rs(client, project_id, project_name)
+    
+    if (return_type == 'data.frame') {
+        if (length(fq_datasets) == 0) {
+            return(data.frame())
+        } else {
+            metadata_df = get_metadata_df(fq_datasets)
+            return(metadata_df)
+        } 
+    } else {
+        metadata <- lapply(fq_datasets, function(x) x$metadata) 
+        return(metadata)
+    }
 }
 
 #' get_dataset
@@ -130,13 +233,15 @@ list_datasets <- function(client,
 #' @param client ReadStore client
 #' @param dataset_id Dataset ID to return
 #' @param dataset_name Dataset name to return
-#' @param return_type The return type (currently only json)
+#' @param return_type The return type (currently only list)
 #' @return json object (list) with fastq dataset
 #' @export
 get_dataset <- function(client,
                         dataset_id = NULL,
                         dataset_name = NULL,
-                        return_type = NULL) {
+                        return_type = 'list') {
+    
+    check_return_type(return_type)
 
     if (is.null(dataset_id) & is.null(dataset_name)) {
         stop("dataset_id or dataset_name required")
@@ -145,7 +250,6 @@ get_dataset <- function(client,
     fq_dataset <- get_fastq_dataset_rs(client, dataset_id, dataset_name)
 
     return(fq_dataset)
-
     }
 
 #' get_fastq
@@ -240,15 +344,82 @@ download_dataset_attachment <- function(
 #' Get list of projects from the ReadStore API
 #' 
 #' @param client ReadStore client
-#' @param return_type The return type (currently only json)
-#' @return (json) list of projects (list objects)
+#' @param return_type The return type  (list | data.frame)
+#' @return data.frame or list of projects
 #' @export
 list_projects <- function(client,
-                        return_type = NULL) {
+                        return_type = 'data.frame') {
+    
+    check_return_type(return_type)
 
     projects <- list_projects_rs(client)
 
-    return(projects)
+    if (return_type == 'data.frame') {
+        
+        if (length(projects) == 0) {
+            return(data.frame())
+        } else {
+
+            # Extract project metadata
+            metadata <- lapply(projects, function(x) x$metadata) 
+            # Extract project attachments
+            attachments <- lapply(projects, function(x) x$attachments) 
+
+            # Flatten the dataset list
+            # Extract id, name, description, paired_end, index_read metrics
+            flattened_df <- do.call(rbind, lapply(projects, function(x) {
+                data.frame(
+                    id = x$id,
+                    name = x$name,
+                    stringsAsFactors = FALSE
+                    )
+                }))
+
+            # Add metadata to the data.frame
+            flattened_df$metadata <- I(metadata)
+            flattened_df$attachments <- I(attachments)
+
+            return(flattened_df)
+        }
+    } else {
+        return(projects)
+    }
+}
+
+
+#' list_projects_metadata
+#'
+#' Return metadata for projects from the ReadStore API
+#' Order of returned projects is the same as the dataset list
+#' 
+#' Return a list of metadata entries for each project
+#' 
+#' or return a data.frame with metadata entries
+#' Here metadata keys will be cast to column names (wide format)
+#' 
+#' @param client ReadStore client
+#' @param return_type The return type (data.frame | list)
+#' @return data.frame or list of datasets of metadata
+#' @export
+#' 
+list_projects_metadata <- function(client,
+                                    return_type = 'data.frame') {
+
+    check_return_type(return_type)                
+
+    projects <- list_projects_rs(client)
+    
+    if (return_type == 'data.frame') {
+        if (length(projects) == 0) {
+            return(data.frame())
+        } else {    
+            metadata_df = get_metadata_df(projects)
+            return(metadata_df)
+        } 
+    } else {
+        metadata <- lapply(projects, function(x) x$metadata) 
+        return(metadata)
+    }
 }
 
 
@@ -276,6 +447,7 @@ get_project <- function(client,
 
     return(project)
 }
+
 
 #' download_project_attachment
 #'
@@ -346,7 +518,7 @@ download_project_attachment <- function(
 #' @export
 upload_pro_data <- function(client,
                             name,
-                            pro_data_path,
+                            pro_data_file,
                             data_type,
                             metadata = list(),
                             description = "",
@@ -357,13 +529,13 @@ upload_pro_data <- function(client,
         stop("dataset_id or dataset_name required")
     }
 
-    if (!(file.exists(pro_data_path))) {
-        stop('pro_data_path does not exists')
+    if (!(file.exists(pro_data_file))) {
+        stop('pro_data_file does not exists')
     }
-    
+
     upload_pro_data_rs(client,
                         name,
-                        pro_data_path,
+                        pro_data_file,
                         data_type,
                         metadata,
                         description,
@@ -384,7 +556,8 @@ upload_pro_data <- function(client,
 #' @param name Name of ProData entry to filter
 #' @param data_type Data type of ProData entry to filter
 #' @param include_archived Include archived entries (bool)
-#' @return (json) list of ProData entries
+#' @param return_type The return type (list | data.frame)
+#' @return data.frame or list of datasets
 #' @export
 list_pro_data <- function(client,
                             project_id = NULL,
@@ -393,8 +566,11 @@ list_pro_data <- function(client,
                             dataset_name = NULL,
                             name = NULL,
                             data_type = NULL,
-                            include_archived = FALSE) {
+                            include_archived = FALSE,
+                            return_type = 'data.frame') {
     
+    check_return_type(return_type)
+
     pro_data <- list_pro_data_rs(client,
                             project_id,
                             project_name,
@@ -403,8 +579,92 @@ list_pro_data <- function(client,
                             name,
                             data_type,
                             include_archived)
+    
+    if (return_type == 'data.frame') {
+        
+        # If ProData is empty return empty data.frame
+        if (length(pro_data) == 0) {
+            return(data.frame())
+        } else {
 
+            metadata <- lapply(pro_data, function(x) x$metadata) 
+
+            flattened_df <- do.call(rbind, lapply(pro_data, function(x) {
+                data.frame(
+                    id = x$id,
+                    name = x$name,
+                    data_type = x$data_type,
+                    version = x$version,
+                    dataset_id = x$dataset_id,
+                    dataset_name = x$dataset_name,
+                    upload_path = x$upload_path,
+                    stringsAsFactors = FALSE
+                )
+            }))
+
+            flattened_df$metadata <- I(metadata)
+
+            return(flattened_df)
+        }
+    } else {
+        return(pro_data)
+    }   
     return(pro_data)
+}
+
+#' list_pro_data_metadata
+#'
+#' Return metadata for processed data (pro_data) from the ReadStore API
+#' Order of the returned metadata is the same as the pro_data list
+#' 
+#' Return a list of pro_data entries for each dataset
+#' 
+#' or return a data.frame with metadata entries
+#' Here metadata keys will be cast to column names (wide format)
+#' 
+#' @param client ReadStore client
+#' @param project_id Project ID to filter
+#' @param project_name Project name to filter
+#' @param dataset_id Dataset ID to filter
+#' @param dataset_name Dataset name to filter
+#' @param name Name of ProData entry to filter
+#' @param data_type Data type of ProData entry to filter
+#' @param include_archived Include archived entries (bool)
+#' @param return_type The return type (list | data.frame)
+#' @return data.frame or list of datasets
+#' @export
+list_pro_data_metadata <- function(client,
+                                    project_id = NULL,
+                                    project_name = NULL,
+                                    dataset_id = NULL,
+                                    dataset_name = NULL,
+                                    name = NULL,
+                                    data_type = NULL,
+                                    include_archived = FALSE,
+                                    return_type = 'data.frame') {
+
+    check_return_type(return_type)                
+
+    pro_data <- list_pro_data_rs(client,
+                            project_id,
+                            project_name,
+                            dataset_id,
+                            dataset_name,
+                            name,
+                            data_type,
+                            include_archived)
+    
+    if (return_type == 'data.frame') {
+        if (length(pro_data) == 0) {
+            return(data.frame())
+        } else {
+            metadata_df = get_metadata_df(pro_data)
+            return(metadata_df)
+        } 
+    } else {
+        metadata <- lapply(pro_data, function(x) x$metadata) 
+        return(metadata)
+    }
 }
 
 
@@ -444,6 +704,7 @@ get_pro_data <- function(client,
 
     return(pro_data)
 }
+
 
 #' delete_pro_data
 #'
