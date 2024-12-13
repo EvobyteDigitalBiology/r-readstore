@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0] - 2024-12-13
+
+**Features**
+- Add method list_datasets_metadata
+- Add method list_projects_metadata
+- Add method list_pro_data_metadata
+
+**Updates**
+- list_datasets: add option to specify data.frame or list as return type
+- list_projects: add option to specify data.frame or list as return type
+- list_pro_data: add option to specify data.frame or list as return type
+
+**Bugfixes**
+Refactor: pro_data_path to pro_data_file
+
 ## [1.1.0] - 2024-12-01
 
 **Features**
