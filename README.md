@@ -125,14 +125,16 @@ client <- get_client()  # Create an instance of the ReadStore client
 datasets <- list_datasets(client)          # List all datasets and return json-style list of list
 
 datasets_project_1 <- list_datasets(client,          # List all datasets for project 1
-                                    project_id = 1) # return json-style list of list
+                                    project_id = 1)  # return data.frame
                                                     
+datasets_metadata <- list_datasets_metadata(client)  # Get metadata for datasets cast to data.frame
+                                                     # metadata keys as column names
 
 datasets_id_25 <- get_dataset(client,                # Get detailed data for dataset 25
-                             dataset_id = 25)       # return json-style list
+                             dataset_id = 25)        # return json-style R list
 
 fastq_files_dataset_25 <- get_fastq(client,          # Get individual fastq files for dataset 25
-                                   dataset_id = 25) # return json-style list of list
+                                   dataset_id = 25)  # return json-style R nested list
 
 download_dataset_attachment(client,                 # Download file attached to dataset 25
                             dataset_id = 25,        
@@ -140,12 +142,15 @@ download_dataset_attachment(client,                 # Download file attached to 
 
 # Manage Projects
 
-projects <- list_projects(client)          # List all projects and return json-style list of list
+projects <- list_projects(client)          # List all projects and return data.frame
 
-projects <- get_project(client,                      # Get details for MyProject
-                       project_name = 'MyProject')  # return json-style list
+projects_metadata <- list_projects_metadata(client) # Get metadata for projects cast to data.frame
+                                                    # metadata keys as column names
 
-download_project_attachment(client,                 # Download file attached to project
+projects <- get_project(client,                         # Get details for MyProject
+                       project_name = 'MyProject')      # return json-style list
+
+download_project_attachment(client,                     # Download file attached to project
                             project_name = 'MyProject'
                             attachment_name = 'project_plan.pptx')
 
@@ -164,16 +169,19 @@ upload_pro_data(client,                                         # Upload Process
                 data_type = 'count_matrix',                     # Set type to 'count_matrix'
                 dataset_id = 25)                                # Attach ProData to dataset_id 25
 
-pro_data <- list_pro_data(client,                # List Processed Data (ProData)
-                        dataset_id = 25)        # Get ProData for dataset_id 25
+pro_data_list <- list_pro_data(client,                # List Processed Data (ProData)
+                            dataset_id = 25)          # Get ProData for dataset_id 25
 
-pro_data <- get_pro_data(client,                         # List Get individual ProData entry
-                        name = 'sample_1_count_matrix', # Get ProData with name 'sample_1_count_matrix'
-                        dataset_id = 25)                # Get ProData for dataset_id 25
+pro_data_metadata <- list_pro_data(client,                   # List ProData metadata as data.frame
+                                   dataset_id = 25)          # For dataset_id 25
+
+pro_data <- get_pro_data(client,                         # Get individual ProData entry
+                        name = 'sample_1_count_matrix',  # Get ProData with name 'sample_1_count_matrix'
+                        dataset_id = 25)                 # Get ProData for dataset_id 25
 
 pro_data <- delete_pro_data(client,                         # Delete ProData
-                           name = 'sample_1_count_matrix', # Get ProData with name 'sample_1_count_matrix'
-                           dataset_id = 25)                # Get ProData for dataset_id 25
+                           name = 'sample_1_count_matrix',  # Get ProData with name 'sample_1_count_matrix'
+                           dataset_id = 25)                 # Get ProData for dataset_id 25
 ```
 
 
@@ -216,19 +224,39 @@ The enironment variables precede over other client configurations.
 ```r
 # List ReadStore Datasets
 
+# Option to subset by project_id OR project_name
+# Option to return either a data.frame or list 
+
 list_datasets(client,
-              project_id = NULL,   # Filter datasets for project with id `project_id`
-              project_name = NULL) # Filter datasets for project with name `project_name`
-                                   # Return json style list of lists
+              project_id = NULL,            # Filter datasets for project with id `project_id`
+              project_name = NULL           # Filter datasets for project with name `project_name`
+              return_type = 'data.frame')   # return_type (data.frame | list)
+
+# List ReadStore Dataset Metadata
+
+# Returns formatted metadata for each dataset
+# Metadata keys are cast into data.frame columns (wide-format)
+
+# Option to subset by project_id OR project_name
+# Option to return either a data.frame or list 
+
+list_datasets_metadata(client,
+                    project_id = NULL,            # Filter metadata for project with id `project_id`
+                    project_name = NULL           # Filter metadata for project with name `project_name`
+                    return_type = 'data.frame')   # return_type (data.frame | list)
 
 # Get ReadStore Dataset Details
-# Must provide dataset_id OR dataset_name
+
+# MUST provide dataset_id OR dataset_name
+# Option to return either a data.frame or list 
 
 get_dataset(client,
             dataset_id = NULL,
             dataset_name = NULL) # Return json style list
 
-# Get FASTQ file data for a dataset
+
+# Get FASTQ file(s)for a specific dataset
+
 # Must provide dataset_id OR dataset_name
 
 get_fastq(client,
@@ -243,9 +271,26 @@ get_fastq(client,
 ```r
 # List ReadStore Projects
 
-list_projects(client) # Return  json style list of lists
+list_projects(client,
+              return_type = 'data.frame') # Return type (data.frame | list)
+
+
+# Get Metadata for Projects from ReadStore
+
+# Return metadata for projects from the ReadStore API
+# Order of returned projects is the same as the dataset list
+
+# Return a list of metadata entries for each project
+
+# or return a data.frame with metadata entries
+# Here metadata keys will be cast to column names (wide format)
+
+list_projects_metadata(client,
+                       return_type = 'data.frame')  # The return type (data.frame | list)
+
 
 # Get ReadStore Project Details
+
 # Must provide project_id OR project_name
 
 get_project(client,
@@ -276,7 +321,24 @@ list_pro_data(client,
                 dataset_name = NULL,     # Filter by Dataset Name
                 name = NULL,             # Filter by Name
                 data_type = NULL,        # Filter by Data Type
-                include_archived = FALSE)# Return archived ProData 
+                include_archived = FALSE, # Return archived ProData
+                return_type = 'data.frame') # The return type (data.frame | list)
+
+
+# List ProData Metadata
+
+list_pro_data_metadata(client,
+                        project_id = NULL,       # Filter by Project ID
+                        project_name = NULL,     # Filter by Project Name
+                        dataset_id = NULL,       # Filter by Dataset ID
+                        dataset_name = NULL,     # Filter by Dataset Name
+                        name = NULL,             # Filter by Name
+                        data_type = NULL,        # Filter by Data Type
+                        include_archived = FALSE,# Return archived ProData
+                        return_type = 'data.frame') # The return type (data.frame | list)
+
+# This function returns metadata for processed data (ProData) from the ReadStore API. The order of the returned metadata is the same as the ProData list. You can choose to return a list of metadata entries for each dataset or a data.frame with metadata entries where metadata keys will be cast to column names (wide format).
+
 
 # Get ProData
 
