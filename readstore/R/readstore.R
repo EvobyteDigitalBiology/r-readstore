@@ -252,6 +252,101 @@ get_dataset <- function(client,
     return(fq_dataset)
     }
 
+
+#' create_dataset
+#'
+#' Create a new dataset by calling create_fastq_dataset_rs
+#'
+#' @param client ReadStore client
+#' @param name Dataset name
+#' @param description Dataset description
+#' @param qc_passed QC Pass
+#' @param paired_end Paired End
+#' @param index_read Index read
+#' @param project_ids List of project IDs
+#' @param project_names List of project names
+#' @param metadata Named list of metadata
+#' @return Created dataset object
+#' @export
+create_dataset <- function(client,
+                           name,
+                           description = '',
+                           project_ids = list(),
+                           project_names = list(),
+                           metadata = list()) {
+    
+    # Check if a dataset with the same name already exists
+    dataset_check <- get_dataset(client, dataset_name = name)
+    
+    if (length(dataset_check) > 0) {
+        stop('Dataset with the same name already exists')
+    }
+
+    # Validate project_ids and project_names
+    if (!is.null(project_ids)) {
+        existing_project_ids <- sapply(project_ids, function(id) {
+            project <- get_project_rs(client, project_id = id)
+            return(!is.null(project))
+        })
+        if (!all(existing_project_ids)) {
+            stop('One or more project_ids do not exist in the database')
+        }
+    }
+
+    if (!is.null(project_names)) {
+        existing_project_names <- sapply(project_names, function(name) {
+            project <- get_project_rs(client, project_name = name)
+            return(!is.null(project))
+        })
+        if (!all(existing_project_names)) {
+            stop('One or more project_names do not exist in the database')
+        }
+    }
+
+    res <- create_fastq_dataset_rs(
+                        client = client,
+                        name = name,
+                        description = description,
+                        qc_passed = FALSE,
+                        paired_end = FALSE,
+                        index_read = FALSE,
+                        project_ids = project_ids,
+                        project_names = project_names,
+                        metadata = metadata
+    )
+    return(res)
+}
+
+
+#' delete_dataset
+#'
+#' Delete a dataset by checking its existence and calling delete_fastq_dataset_rs
+#'
+#' @param client ReadStore client
+#' @param dataset_id Dataset ID
+#' @param dataset_name Dataset name
+#' @return ID of the deleted dataset
+#' @export
+delete_dataset <- function(client, dataset_id = NULL, dataset_name = NULL) {
+    
+    if (is.null(dataset_id) && is.null(dataset_name)) {
+        stop("dataset_id or dataset_name is required")
+    }
+    ds <- get_fastq_dataset_rs(client, dataset_id = dataset_id, dataset_name = dataset_name)
+    if (length(ds) == 0 || is.null(ds$id)) {
+        stop("No dataset found with the provided dataset_id or dataset_name")
+    }
+
+    # Returns integer
+    res <- delete_fastq_dataset_rs(client, ds$id)
+
+    return(res)
+}
+
+
+
+
+
 #' get_fastq
 #'
 #' Get fastq files from the ReadStore API for a dataset
@@ -446,6 +541,70 @@ get_project <- function(client,
     project <- get_project_rs(client, project_id, project_name)
 
     return(project)
+}
+
+
+#' create_project
+#'
+#' Create a new project by calling create_project_rs
+#'
+#' @param client ReadStore client
+#' @param name Project name
+#' @param description Project description
+#' @param metadata List of project metadata
+#' @param dataset_metadata_keys vector of dataset metadata keys
+#' @return The created project object
+#' @export
+create_project <- function(client,
+                           name,
+                           description = '',
+                           metadata = list(),
+                           dataset_metadata_keys = c()) {
+    
+    project_check <- get_project(client, project_name = name)
+    if (length(project_check) > 0) {
+        stop("Project with the same name already exists")
+    }
+
+    # Validate dataset_metadata_keys is a vector
+    if (!is.vector(dataset_metadata_keys)) {
+        stop('dataset_metadata_keys must be a vector')
+    }
+
+    # Convert dataset_metadata_keys to a list
+    dataset_metadata_keys <- as.list(setNames(rep('', length(dataset_metadata_keys)), dataset_metadata_keys))
+
+    result <- create_project_rs(
+        client = client,
+        name = name,
+        description = description,
+        metadata = metadata,
+        dataset_metadata_keys = dataset_metadata_keys
+    )
+
+    return(result)
+}
+
+
+#' delete_project
+#'
+#' Delete an existing project by checking its existence and calling delete_project_rs
+#'
+#' @param client ReadStore client
+#' @param project_id Project ID to delete
+#' @param project_name Project name to delete
+#' @return ID of the deleted project
+#' @export
+delete_project <- function(client, project_id = NULL, project_name = NULL) {
+    if (is.null(project_id) && is.null(project_name)) {
+        stop("project_id or project_name is required")
+    }
+    project <- get_project_rs(client, project_id = project_id, project_name = project_name)
+    if (length(project) == 0 || is.null(project$id)) {
+        stop("No project found with the provided project_id or project_name")
+    }
+    result <- delete_project_rs(client, project$id)
+    return(result)
 }
 
 
