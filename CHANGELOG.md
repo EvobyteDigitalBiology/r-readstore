@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.3.0] - 2025-01-02
+
+**Features**
+- Add method create_dataset
+- Add method delete_dataset
+- Add method create_project
+- Add method delete_project
+
+**Updates**
+- Update validation of metadata in backend
+
 ## [1.2.0] - 2024-12-13
 
 **Features**
