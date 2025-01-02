@@ -12,6 +12,36 @@ PROJECT_ENDPOINT = "project/"
 PROJECT_ATTACHMENT_ENDPOINT = "project_attachment/"
 PRO_DATA_ENDPOINT = "pro_data/"
 
+METADATA_RESERVED_KEYS = c('id',
+                        'name',
+                        'project',
+                        'project_ids',
+                        'project_names',
+                        'owner_group_name',
+                        'qc_passed',
+                        'paired_end',
+                        'index_read',
+                        'created',
+                        'description',
+                        'owner_username',
+                        'fq_file_r1',
+                        'fq_file_r2',
+                        'fq_file_i1',
+                        'fq_file_i2',
+                        'id_project',
+                        'name_project',
+                        'name_og',
+                        'archived',
+                        'collaborators',
+                        'dataset_metadata_keys',
+                        'data_type',
+                        'version',
+                        'valid_to',
+                        'upload_path',
+                        'owner_username',
+                        'fq_dataset',
+                        'id_fq_dataset',
+                        'name_fq_dataset')
 
 #' validate_charset
 #'
@@ -29,6 +59,33 @@ validate_charset <- function(query_str) {
   return(all(strsplit(query_str, NULL)[[1]] %in% allowed))
 }
 
+#' validate_metadata
+#'
+#' Check if metadata keys are valid
+#' Allowed characters are: 0-9, a-z, A-Z, _, -, ., @
+#' Must not be empty
+#' Must not be a reserved keyword
+#' 
+#' @param metadata List if metadata entries
+validate_metadata <- function(metadata) {
+  # Validate metadata list
+  
+  # Ensure keys are non-empty, valid charset, and not reserved
+  
+  for (key in names(metadata)) {
+    if (key == "") {
+      stop("Empty Key")
+    }
+    
+    if (!validate_charset(key)) {
+      stop("Invalid character in key. Must be alphanumeric or _-.@")
+    }
+    
+    if (key %in% METADATA_RESERVED_KEYS) {
+      stop(paste("Reserved Keyword not allowed in metadata:", key))
+    }
+  }
+}
 
 #' test_server_connection
 #'
@@ -217,6 +274,228 @@ get_fq_file_upload_path_rs <- function(client, fq_file_id) {
     return(fq_file$upload_path)
 }
 
+#' list_fq_files_rs
+#'
+#' List fastq files from the ReadStore API
+#' 
+#' @param client ReadStore client
+#' @return (json) list of projects (list objects)
+list_fq_files_rs <- function(client) {
+
+    fq_file_endpoint = file.path(client$endpoint_url, FQ_FILE_ENDPOINT, fsep = "")
+
+    res <- httr::GET(fq_file_endpoint,httr::authenticate(client$username, client$token), encode = "json")
+
+    if (!(httr::status_code(res) %in% c(200, 204))) {
+        stop("get_fq_file Failed")
+    } else {
+        json = httr::content(res, "parsed")
+        
+        return(json)
+    }
+}
+
+#' create_fq_file_rs
+#'
+#' Create fastq files from the ReadStore API
+#' 
+#' @param client ReadStore client
+#' @param name Fastq file name
+#' @param read_type Read type (R1, R2, I1, I2)
+#' @param qc_passed QC Pass
+#' @param read_length Read length
+#' @param num_reads Number of reads
+#' @param size_mb Size in MB
+#' @param qc_phred_mean QC Phred Mean
+#' @param qc_phred QC Phred (must be a named list in R)
+#' @param upload_path Upload Path
+#' @param md5_checksum MD5 Checksum
+#' @param staging Staging
+#' @param pipeline_version Pipeline Version
+#' @return (json) list of projects (list objects)
+create_fq_file_rs <- function(client,
+                            name, 
+                            read_type, 
+                            qc_passed, 
+                            read_length, 
+                            num_reads, 
+                            size_mb, 
+                            qc_phred_mean, 
+                            qc_phred, 
+                            upload_path, 
+                            md5_checksum, 
+                            staging, 
+                            pipeline_version) {
+    # Create Fastq File in ReadStore
+
+    fq_file_endpoint = file.path(client$endpoint_url, FQ_FILE_ENDPOINT, fsep = "")
+    
+    if (name == "") {
+        stop("create_fq_file failed: Empty Name")
+    }
+    if (!(validate_charset(name))) {
+        stop("create_fq_file failed: Invalid Name")
+    }
+
+    # Define JSON for POST request
+    json_data <- list(
+        name = name,
+        bucket = 'hello',
+        key = 'hello',
+        read_type = read_type,
+        qc_passed = qc_passed,
+        read_length = read_length,
+        num_reads = num_reads,
+        size_mb = size_mb,
+        qc_phred_mean = qc_phred_mean,
+        qc_phred = qc_phred,
+        upload_path = upload_path,
+        md5_checksum = md5_checksum,
+        staging = staging,
+        pipeline_version = pipeline_version
+    )
+
+    # Make the POST request
+    response <- httr::POST(
+        url = fq_file_endpoint,
+        body = json_data,
+        encode = "json",
+        config = httr::authenticate(client$username, client$token)
+    )
+    
+    # Check the response
+    if (httr::status_code(response) != 201) {
+        tryCatch({
+        detail <- httr::content(response, "parsed")
+        }, error = function(e) {
+        detail <- "No Message"
+        })
+        stop(paste("create_fq_file failed:", detail))
+    } else {
+        return(httr::content(response, "parsed"))
+    }
+}
+
+#' update_fq_file_rs
+#'
+#' Update fastq files from the ReadStore API
+#' 
+#' @param client ReadStore client
+#' @param fq_file_id Fastq file ID
+#' @param name Fastq file name
+#' @param read_type Read type (R1, R2, I1, I2)
+#' @param qc_passed QC Pass
+#' @param read_length Read length
+#' @param num_reads Number of reads
+#' @param size_mb Size in MB
+#' @param qc_phred_mean QC Phred Mean
+#' @param qc_phred QC Phred (must be a named list in R)
+#' @param upload_path Upload Path
+#' @param md5_checksum MD5 Checksum
+#' @param staging Staging
+#' @param pipeline_version Pipeline Version
+#' @return (json) list of projects (list objects)
+update_fq_file_rs <- function(client,
+                            fq_file_id,
+                            name, 
+                            read_type, 
+                            qc_passed, 
+                            read_length, 
+                            num_reads, 
+                            size_mb, 
+                            qc_phred_mean, 
+                            qc_phred, 
+                            upload_path, 
+                            md5_checksum, 
+                            staging, 
+                            pipeline_version) {
+    # Create Fastq File in ReadStore
+
+    fq_file_endpoint <- file.path(client$endpoint_url, FQ_FILE_ENDPOINT, fsep = "")
+    fq_file_endpoint <- file.path(fq_file_endpoint, fq_file_id, '/', fsep = "")
+
+    if (name == "") {
+        stop("update_fq_file failed: Empty Name")
+    }
+    if (!(validate_charset(name))) {
+        stop("update_fq_file failed: Invalid Name")
+    }
+
+    # Define JSON for POST request
+    json_data <- list(
+        name = name,
+        read_type = read_type,
+        qc_passed = qc_passed,
+        read_length = read_length,
+        num_reads = num_reads,
+        size_mb = size_mb,
+        qc_phred_mean = qc_phred_mean,
+        qc_phred = qc_phred,
+        upload_path = upload_path,
+        md5_checksum = md5_checksum,
+        staging = staging,
+        pipeline_version = pipeline_version
+    )
+    
+    # Make the POST request
+    response <- httr::PUT(
+        url = fq_file_endpoint,
+        body = json_data,
+        encode = "json",
+        config = httr::authenticate(client$username, client$token)
+    )
+    
+    # Check the response
+    if (httr::status_code(response) != 200) {
+        tryCatch({
+        detail <- httr::content(response, "parsed")
+        }, error = function(e) {
+        detail <- "No Message"
+        })
+        stop(paste("update_fq_file failed:", detail))
+    } else {
+        return(httr::content(response, "parsed"))
+    }
+}
+
+#' delete_fq_file_rs
+#'
+#' Delete fastq file from the ReadStore API
+#' 
+#' @param client ReadStore client
+#' @param fq_file_id Fastq file ID
+#' @return (json) list of projects (list objects)
+delete_fq_file_rs <- function(client, fq_file_id) {
+
+    fq_file_endpoint = file.path(client$endpoint_url, FQ_FILE_ENDPOINT, fsep = "")
+    fq_file_endpoint = file.path(fq_file_endpoint, fq_file_id, '/', fsep = "")
+
+    res <- httr::DELETE(fq_file_endpoint,
+                        httr::authenticate(client$username, client$token),
+                        encode = "json")
+
+    if ((httr::status_code(res) == 400) | (httr::status_code(res) == 404)) {
+        json = httr::content(res, "parsed")
+        detail = json$detail
+        
+        if (detail == "FqFile not found") {
+            stop("FqFile not found")
+        } else {
+            stop(paste("delete_fq_file", detail))
+        }
+    } else if (httr::status_code(res) == 403) {
+        json = httr::content(res, "parsed")
+        detail = json$detail
+        stop(paste("FqFile Delete failed", detail))
+    } else if (httr::status_code(res) %in% c(200,204)) {
+        json = httr::content(res, "parsed")
+        fq_file_id = as.integer(json$id)
+        return(fq_file_id)
+    } else {
+        stop("delete_fq_file failed")
+    }
+}
+
 #' list_fastq_datasets_rs
 #'
 #' Get list of fastq datasets from the ReadStore API
@@ -298,6 +577,227 @@ get_fastq_dataset_rs <- function(client, dataset_id = NULL, dataset_name = NULL)
     }
 }
 
+#' create_fastq_dataset_rs
+#'
+#' Create fastq dataset from the ReadStore API
+#' ID or Name must be provided
+#' 
+#' @param client ReadStore client
+#' @param name Dataset name
+#' @param description Dataset description
+#' @param qc_passed QC Pass
+#' @param paired_end Paired End
+#' @param index_read Index Read
+#' @param project_ids List of project IDs
+#' @param project_names List of project names
+#' @param metadata Metadata (must be a named list in R)
+#' @param fq_file_r1_id Fastq file R1 ID
+#' @param fq_file_r2_id Fastq file R2 ID
+#' @param fq_file_i1_id Fastq file I1 ID
+#' @param fq_file_i2_id Fastq file I2 ID
+#' @return A list containing the created Fastq dataset
+create_fastq_dataset_rs <- function(client,
+                                    name, 
+                                    description, 
+                                    qc_passed, 
+                                    paired_end, 
+                                    index_read, 
+                                    project_ids, 
+                                    project_names, 
+                                    metadata, 
+                                    fq_file_r1_id = NULL, 
+                                    fq_file_r2_id = NULL, 
+                                    fq_file_i1_id = NULL, 
+                                    fq_file_i2_id = NULL) {
+  
+    fq_dataset_endpoint = file.path(client$endpoint_url, FQ_DATASET_ENDPOINT, fsep = "")
+
+    if (name == "") {
+        stop("create_fastq_dataset failed: Empty Name")
+    }
+    if (!(validate_charset(name))) {
+        stop("create_fastq_dataset failed: Invalid Name")
+    }
+    
+    validate_metadata(metadata)
+
+    if (length(metadata) == 0) {
+        metadata <- setNames(as.list(rep("", length(metadata))), metadata)
+    }    
+
+    # Define JSON for POST request
+    json_data <- list(
+        name = name,
+        description = description,
+        qc_passed = qc_passed,
+        paired_end = paired_end,
+        index_read = index_read,
+        project_ids = project_ids,
+        project_names = project_names,
+        metadata = metadata,
+        fq_file_r1 = fq_file_r1_id,
+        fq_file_r2 = fq_file_r2_id,
+        fq_file_i1 = fq_file_i1_id,
+        fq_file_i2 = fq_file_i2_id
+    )
+    
+    json_data_str <- jsonlite::toJSON(json_data, null="null", auto_unbox = TRUE)
+
+    # Make the POST request
+    response <- httr::POST(
+        url = fq_dataset_endpoint,
+        body = json_data_str,
+        encode = "raw",
+        config = httr::authenticate(client$username, client$token),
+        content_type("application/json")
+    )
+
+    # Check the response
+    if (httr::status_code(response) != 201) {
+        tryCatch({
+        detail <- httr::content(response, "parsed")
+        }, error = function(e) {
+        detail <- "No Message"
+        })
+        stop(paste("create_fastq_dataset failed:", detail))
+    } else {
+        return(httr::content(response, "parsed"))
+    }
+}
+
+
+#' update_fastq_dataset_rs
+#'
+#' Get update fastq dataset from the ReadStore API
+#' ID or Name must be provided
+#' 
+#' @param client ReadStore client
+#' @param dataset_id Dataset ID
+#' @param name Dataset name
+#' @param description Dataset description
+#' @param qc_passed QC Pass
+#' @param paired_end Paired End
+#' @param index_read Index Read
+#' @param project_ids List of project IDs
+#' @param project_names List of project names
+#' @param metadata Metadata (must be a named list in R)
+#' @param fq_file_r1_id Fastq file R1 ID
+#' @param fq_file_r2_id Fastq file R2 ID
+#' @param fq_file_i1_id Fastq file I1 ID
+#' @param fq_file_i2_id Fastq file I2 ID
+#' @return A list containing the created Fastq dataset
+update_fastq_dataset_rs <- function(client,
+                                    dataset_id,
+                                    name, 
+                                    description, 
+                                    qc_passed, 
+                                    paired_end, 
+                                    index_read, 
+                                    project_ids, 
+                                    project_names, 
+                                    metadata, 
+                                    fq_file_r1_id = NULL, 
+                                    fq_file_r2_id = NULL, 
+                                    fq_file_i1_id = NULL, 
+                                    fq_file_i2_id = NULL) {
+  
+    fq_dataset_endpoint = file.path(client$endpoint_url, FQ_DATASET_ENDPOINT, fsep = "")
+    fq_dataset_endpoint = file.path(fq_dataset_endpoint, dataset_id, '/', fsep = "")
+
+    if (name == "") {
+        stop("create_fastq_dataset failed: Empty Name")
+    }
+    if (!(validate_charset(name))) {
+        stop("create_fastq_dataset failed: Invalid Name")
+    }
+    
+    validate_metadata(metadata)
+    
+    # Here is an error
+    if (length(metadata) == 0) {
+        metadata <- setNames(as.list(rep("", length(metadata))), metadata)
+    }
+
+    # Define JSON for POST request
+    json_data <- list(
+        name = name,
+        description = description,
+        qc_passed = qc_passed,
+        paired_end = paired_end,
+        index_read = index_read,
+        project_ids = project_ids,
+        project_names = project_names,
+        metadata = metadata,
+        fq_file_r1 = fq_file_r1_id,
+        fq_file_r2 = fq_file_r2_id,
+        fq_file_i1 = fq_file_i1_id,
+        fq_file_i2 = fq_file_i2_id
+    )
+    
+    # TODO: Still brings in an error
+
+    json_data_str <- jsonlite::toJSON(json_data, null="null", auto_unbox = TRUE)
+
+    # Make the POST request
+    response <- httr::PUT(
+        url = fq_dataset_endpoint,
+        body = json_data_str,
+        encode = "raw",
+        config = httr::authenticate(client$username, client$token),
+        content_type("application/json")
+    )
+
+    # Check the response
+    if (httr::status_code(response) != 200) {
+        tryCatch({
+        detail <- httr::content(response, "parsed")
+        }, error = function(e) {
+        detail <- "No Message"
+        })
+        stop(paste("update_fastq_dataset failed:", detail))
+    } else {
+        return(httr::content(response, "parsed"))
+    }
+}
+
+#' delete_fq_file_rs
+#'
+#' Delete fastq file from the ReadStore API
+#' 
+#' @param client ReadStore client
+#' @param dataset_id Fastq file ID
+#' @return (json) list of projects (list objects)
+delete_fastq_dataset_rs <- function(client, dataset_id) {
+
+    fq_dataset_endpoint = file.path(client$endpoint_url, FQ_DATASET_ENDPOINT, fsep = "")
+    fq_dataset_endpoint = file.path(fq_dataset_endpoint, dataset_id, '/', fsep = "")
+
+    res <- httr::DELETE(fq_dataset_endpoint,
+                        httr::authenticate(client$username, client$token),
+                        encode = "json")
+
+    if (httr::status_code(res) == 400) {
+        json = httr::content(res, "parsed")
+        detail = json$detail
+        if (detail == "FqDataset not found") {
+            stop("FqDataset not found")
+        } else {
+            stop(paste("delete_fastq_dataset", detail))
+        }
+    } else if (httr::status_code(res) == 403) {
+        json = httr::content(res, "parsed")
+        detail = json$detail
+        stop(paste("FqDataset Delete failed", detail))
+    } else if (httr::status_code(res) %in% c(200,204)) {
+        json = httr::content(res, "parsed")
+        dataset_id = as.integer(json$id)
+        return(dataset_id)
+    } else {
+        stop("delete_fastq_dataset failed")
+    }
+}
+
+
 #' list_projects_rs
 #'
 #' Get list of projects from the ReadStore API
@@ -365,6 +865,188 @@ get_project_rs <- function(client, project_id = NULL, project_name = NULL) {
         }
     }
 }
+
+
+#' create_project_rs
+#'
+#' Create project from the ReadStore API
+#' 
+#' @param client ReadStore client
+#' @param name Project ID to return
+#' @param description Project name to return
+#' @param metadata List of project metadata
+#' @param dataset_metadata_keys vector of dataset metadata keys
+#' @return json object (list) with project
+create_project_rs <- function(client,
+                            name, 
+                            description, 
+                            metadata, 
+                            dataset_metadata_keys) {
+    # Create Project in ReadStore
+
+    project_endpoint = file.path(client$endpoint_url, PROJECT_ENDPOINT, fsep = "")
+    
+    # Validate name
+    if (name == "") {
+        stop("create_project failed: Empty Name")
+    }
+    if (!(validate_charset(name))) {
+        stop("create_project failed: Invalid Name")
+    }
+
+    validate_metadata(metadata)
+    validate_metadata(dataset_metadata_keys)
+
+    if (length(metadata) == 0) {    
+        metadata <- setNames(as.list(rep("", length(metadata))), metadata)
+    }
+    if (length(dataset_metadata_keys) == 0) {
+        dataset_metadata_keys <- setNames(as.list(rep("", length(dataset_metadata_keys))), dataset_metadata_keys)
+    }
+
+    # Prepare JSON for POST request
+    json_data <- list(
+        name = name,
+        description = description,
+        metadata = metadata,
+        dataset_metadata_keys = dataset_metadata_keys
+    )
+    
+    json_data_str <- jsonlite::toJSON(json_data, auto_unbox = TRUE, null = "null")
+
+    # Make the POST request
+    response <- httr::POST(
+        url = project_endpoint,
+        body = json_data_str,
+        encode = "raw",
+        config = httr::authenticate(client$username, client$token),
+        httr::add_headers(`Content-Type` = "application/json")
+    )
+
+    # Check the response
+    if (httr::status_code(response) != 201) {
+        tryCatch({
+        detail <- httr::content(response, "parsed")
+        }, error = function(e) {
+        detail <- "No Message"
+        })
+        stop(paste("create_project failed:", detail))
+    } else {
+        return(httr::content(response, "parsed"))
+    }
+}
+
+
+#' update_project_rs
+#'
+#' Update project from the ReadStore API
+#' 
+#' @param client ReadStore client
+#' @param name Project ID to return
+#' @param description Project name to return
+#' @param metadata List of project metadata
+#' @param dataset_metadata_keys vector of dataset metadata keys
+#' @return json object (list) with project
+update_project_rs <- function(client,
+                              project_id,
+                              name,
+                              description, 
+                              metadata,
+                              dataset_metadata_keys) {
+    # Create Project in ReadStore
+
+    project_endpoint = file.path(client$endpoint_url, PROJECT_ENDPOINT, fsep = "")
+    project_endpoint = file.path(project_endpoint, project_id, '/', fsep = "")
+    
+    # Validate name
+    if (name == "") {
+        stop("create_project failed: Empty Name")
+    }
+    if (!(validate_charset(name))) {
+        stop("create_project failed: Invalid Name")
+    }
+
+    validate_metadata(metadata)
+    validate_metadata(dataset_metadata_keys)
+
+    if (length(metadata) == 0) {    
+        metadata <- setNames(as.list(rep("", length(metadata))), metadata)
+    }
+    if (length(dataset_metadata_keys) == 0) {
+        dataset_metadata_keys <- setNames(as.list(rep("", length(dataset_metadata_keys))), dataset_metadata_keys)
+    }
+
+    # Prepare JSON for POST request
+    json_data <- list(
+        name = name,
+        description = description,
+        metadata = metadata,
+        dataset_metadata_keys = dataset_metadata_keys
+    )
+
+    json_data_str <- jsonlite::toJSON(json_data, auto_unbox = TRUE, null = "null")
+
+    # Make the POST request
+    response <- httr::PUT(
+        url = project_endpoint,
+        body = json_data_str,
+        encode = "raw",
+        config = httr::authenticate(client$username, client$token),
+        httr::add_headers(`Content-Type` = "application/json")
+    )
+
+    # Check the response
+    if (httr::status_code(response) != 200) {
+        tryCatch({
+        detail <- httr::content(response, "parsed")
+        }, error = function(e) {
+        detail <- "No Message"
+        })
+        stop(paste("create_project failed:", detail))
+    } else {
+        return(httr::content(response, "parsed"))
+    }
+}
+
+
+
+#' delete_project_rs
+#'
+#' Delete Project from the ReadStore API
+#' 
+#' @param client ReadStore client
+#' @param project_id Project ID
+#' @return (json) list of projects (list objects)
+delete_project_rs <- function(client, project_id) {
+
+    project_endpoint = file.path(client$endpoint_url, PROJECT_ENDPOINT, fsep = "")
+    project_endpoint = file.path(project_endpoint, project_id, '/', fsep = "")
+
+    res <- httr::DELETE(project_endpoint,
+                        httr::authenticate(client$username, client$token),
+                        encode = "json")
+
+    if (httr::status_code(res) == 400) {
+        json = httr::content(res, "parsed")
+        detail = json$detail
+        if (detail == "Project not found") {
+            stop("Project not found")
+        } else {
+            stop(paste("delete_project", detail))
+        }
+    } else if (httr::status_code(res) == 403) {
+        json = httr::content(res, "parsed")
+        detail = json$detail
+        stop(paste("Project Delete failed", detail))
+    } else if (httr::status_code(res) %in% c(200,204)) {
+        json = httr::content(res, "parsed")
+        project_id = as.integer(json$id)
+        return(project_id)
+    } else {
+        stop("delete_project failed")
+    }
+}
+
 
 
 #' download_project_attachment_rs
@@ -697,11 +1379,11 @@ delete_pro_data_rs <- function(client,
 
     if (!is.null(pro_data_id)) {
         pro_data_endpoint = file.path(pro_data_endpoint, pro_data_id, '/', fsep = "")
-        res = httr::DELETE(pro_data_endpoint,
+        res <- httr::DELETE(pro_data_endpoint,
                         httr::authenticate(client$username, client$token),
                         encode = "json")
     } else {
-        res = httr::DELETE(pro_data_endpoint,
+        res <- httr::DELETE(pro_data_endpoint,
                             query = json_payload,
                             httr::authenticate(client$username, client$token),
                             encode = "json")
