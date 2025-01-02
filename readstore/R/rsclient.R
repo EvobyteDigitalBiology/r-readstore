@@ -625,6 +625,9 @@ create_fastq_dataset_rs <- function(client,
         metadata <- setNames(as.list(rep("", length(metadata))), metadata)
     }    
 
+    # How to cast a vector to a list in jsonlite
+
+
     # Define JSON for POST request
     json_data <- list(
         name = name,
@@ -632,8 +635,8 @@ create_fastq_dataset_rs <- function(client,
         qc_passed = qc_passed,
         paired_end = paired_end,
         index_read = index_read,
-        project_ids = project_ids,
-        project_names = project_names,
+        project_ids = unname(project_ids),
+        project_names = unname(project_names),
         metadata = metadata,
         fq_file_r1 = fq_file_r1_id,
         fq_file_r2 = fq_file_r2_id,
@@ -641,7 +644,7 @@ create_fastq_dataset_rs <- function(client,
         fq_file_i2 = fq_file_i2_id
     )
     
-    json_data_str <- jsonlite::toJSON(json_data, null="null", auto_unbox = TRUE)
+    json_data_str <- jsonlite::toJSON(json_data, null="null", auto_unbox = TRUE, pretty=FALSE)
 
     # Make the POST request
     response <- httr::POST(
@@ -725,8 +728,8 @@ update_fastq_dataset_rs <- function(client,
         qc_passed = qc_passed,
         paired_end = paired_end,
         index_read = index_read,
-        project_ids = project_ids,
-        project_names = project_names,
+        project_ids = unname(project_ids),
+        project_names = unname(project_names),
         metadata = metadata,
         fq_file_r1 = fq_file_r1_id,
         fq_file_r2 = fq_file_r2_id,
