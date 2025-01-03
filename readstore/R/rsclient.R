@@ -652,7 +652,7 @@ create_fastq_dataset_rs <- function(client,
         body = json_data_str,
         encode = "raw",
         config = httr::authenticate(client$username, client$token),
-        content_type("application/json")
+        httr::add_headers(`Content-Type` = "application/json")
     )
 
     # Check the response
@@ -747,7 +747,7 @@ update_fastq_dataset_rs <- function(client,
         body = json_data_str,
         encode = "raw",
         config = httr::authenticate(client$username, client$token),
-        content_type("application/json")
+        httr::add_headers(`Content-Type` = "application/json")
     )
 
     # Check the response
