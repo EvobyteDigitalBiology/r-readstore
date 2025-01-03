@@ -263,44 +263,62 @@ get_dataset <- function(client,
 #' @param qc_passed QC Pass
 #' @param paired_end Paired End
 #' @param index_read Index read
-#' @param project_ids List of project IDs
-#' @param project_names List of project names
+#' @param project_ids Vector of project IDs
+#' @param project_names Vector of project names
 #' @param metadata Named list of metadata
 #' @return Created dataset object
 #' @export
 create_dataset <- function(client,
                            name,
                            description = '',
-                           project_ids = list(),
-                           project_names = list(),
+                           project_ids = c(),
+                           project_names = c(),
                            metadata = list()) {
     
     # Check if a dataset with the same name already exists
     dataset_check <- get_dataset(client, dataset_name = name)
-    
+
     if (length(dataset_check) > 0) {
         stop('Dataset with the same name already exists')
     }
 
     # Validate project_ids and project_names
     if (!is.null(project_ids)) {
+
+        if (!is.vector(project_ids)) {
+            stop('project_ids must be a vector')
+        }
+
         existing_project_ids <- sapply(project_ids, function(id) {
             project <- get_project_rs(client, project_id = id)
             return(!is.null(project))
         })
         if (!all(existing_project_ids)) {
             stop('One or more project_ids do not exist in the database')
+        } else {
+            project_ids <- as.list(project_ids)
         }
+    } else {
+        project_ids <- list()
     }
 
     if (!is.null(project_names)) {
+
+        if (!is.vector(project_names)) {
+            stop('project_names must be a vector')
+        }
+
         existing_project_names <- sapply(project_names, function(name) {
             project <- get_project_rs(client, project_name = name)
             return(!is.null(project))
         })
         if (!all(existing_project_names)) {
             stop('One or more project_names do not exist in the database')
+        } else {
+            project_names <- as.list(project_names)
         }
+    } else {
+        project_names <- list()
     }
 
     res <- create_fastq_dataset_rs(
@@ -312,8 +330,8 @@ create_dataset <- function(client,
                         index_read = FALSE,
                         project_ids = project_ids,
                         project_names = project_names,
-                        metadata = metadata
-    )
+                        metadata = metadata)
+
     return(res)
 }
 
@@ -567,7 +585,7 @@ create_project <- function(client,
     }
 
     # Validate dataset_metadata_keys is a vector
-    if (!is.vector(dataset_metadata_keys)) {
+    if ((length(dataset_metadata_keys) > 0) & (!is.vector(dataset_metadata_keys))) {
         stop('dataset_metadata_keys must be a vector')
     }
 
