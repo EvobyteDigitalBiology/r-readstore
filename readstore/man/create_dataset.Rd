@@ -8,8 +8,8 @@ create_dataset(
   client,
   name,
   description = "",
-  project_ids = list(),
-  project_names = list(),
+  project_ids = c(),
+  project_names = c(),
   metadata = list()
 )
 }
@@ -20,9 +20,9 @@ create_dataset(
 
 \item{description}{Dataset description}
 
-\item{project_ids}{List of project IDs}
+\item{project_ids}{Vector of project IDs}
 
-\item{project_names}{List of project names}
+\item{project_names}{Vector of project names}
 
 \item{metadata}{Named list of metadata}
 
