@@ -323,8 +323,8 @@ When creating datasets, the `name` argument and `metadata` dictionary are checke
 create_dataset(client,
                name,                    # Set name
                description = '',        # Set description. Defaults to ''
-               project_ids = list(),    # Set project_ids to attach dataset to.
-               project_names = list(),  # Set project_names to attach dataset to.
+               project_ids = c(),    # Set project_ids (as vector) to attach dataset to.
+               project_names = c(),  # Set project_names (as vector) to attach dataset to.
                metadata = list())       # Set metadata for dataset. Defaults to empty list.
 
 # Delete Dataset (and attached FASTQ files)
