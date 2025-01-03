@@ -1,0 +1,53 @@
+name: Create Release on New Tag
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger the workflow on push events for tags like v1.0.0, v2.0.0, etc.
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      # Step 3: Create GitHub Release
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: r-readstore ${{ github.ref_name }}
+          body: |
+            r-readstore ${{ github.ref_name }}.
+
+            ReadStore is a platform for storing, managing, and integrating omics data. It speeds up analysis and offers a simple way of managing and sharing NGS omics datasets, metadata and processed data (Processed Data). Built-in project and metadata management structures your workflows and a collaborative user interface enhances teamwork — so you can focus on generating insights.
+
+            The integrated web service allows you to retrieve data directly from ReadStore via the terminal Command-Line Interface (CLI) or through Python and R SDKs.
+            The ReadStore Basic version provides a local web server with simple user management. For organization-wide deployment, advanced user and group management, or cloud integration, please check out the ReadStore Advanced versions and contact us at info@evo-byte.com.
+
+            **Description**
+
+            r-readstore is a R client (SDK) that lets you easily connect to your ReadStore server and interact with the ReadStore API.
+            By importing the readstore package in R, you can quickly retrieve data from a ReadStore server.
+
+            **Getting Started**
+            Please read and follow the installation instructions described in the README.
+
+            **Documentation**
+            You can find the full documentation for the ReadStore ecosystem [here](https://evobytedigitalbiology.github.io/readstore/).
+
+            **Changelog**
+            [CHANGELOG.md](https://github.com/EvobyteDigitalBiology/r-readstore/blob/main/docs/CHANGELOG.md)
+
+          draft: false
+          prerelease: false
