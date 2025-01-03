@@ -1,0 +1,55 @@
+# mkdocs.yml
+
+site_name: ReadStore R Client (SDK) Docs
+
+theme:
+  name: "material"
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annnotation
+    - content.copy
+  language: en
+  logo: assets/BannerLarge.png
+  favicon: img/favicon.ico
+
+markdown_extensions:
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: true
+  - search:
+      lang: en
+  - neoteroi.mkdocsoad:
+      use_pymdownx: true
+
+nav:
+  - Home: index.md
+  - Readme: readme.md
+  - Changelog: CHANGELOG.md
+  - API Reference: rest_api.md
+
+extra_css:
+  - stylesheets/extra.css
+  - stylesheets/mkdocsoad.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/EvobyteDigitalBiology/r-readstore
+  homepage: https://evo-byte.com/readstore
+
+copyright: Copyright &copy; 2024-2025 EVOBYTE Digital Biology Dr. Jonathan Alles
