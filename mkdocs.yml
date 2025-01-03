@@ -40,7 +40,6 @@ nav:
   - Home: index.md
   - Readme: readme.md
   - Changelog: CHANGELOG.md
-  - API Reference: rest_api.md
 
 extra_css:
   - stylesheets/extra.css
