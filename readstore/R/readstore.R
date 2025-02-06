@@ -60,10 +60,17 @@ get_client <- function(config_dir = '~/.readstore',
                         port = 8000,
                         fastq_extensions = c('.fastq','.fastq.gz','.fq','.fq.gz')) {
 
-    endpoint <- paste0(paste(host, port, sep=':'),'/')
+    # TODO: username+token should take precedence over config_dir if provided
 
     if (xor(!(is.null(username)),(!(is.null(username))))) {
         stop('Both Username and Token must be provided')
+    # If username and token are provided, they take precedence over config file
+    } else if (!(is.null(username) | is.null(token))) {
+        
+        username <- username
+        token <- token
+        fastq_extensions <- fastq_extensions
+        endpoint <- paste0(paste(host, port, sep=':'),'/')
 
     } else if (file.exists(config_dir)) {
         
@@ -85,6 +92,10 @@ get_client <- function(config_dir = '~/.readstore',
         endpoint <- rs_config$endpoint_url
         fastq_extensions <- rs_config$fastq_extensions
     }
+
+    # Check if username and token are provided,
+    # if true they take precedence over config file
+
 
     # Check for env variables taking precedence
     if (!(Sys.getenv("READSTORE_USERNAME") == "")) {
@@ -269,14 +280,14 @@ get_dataset <- function(client,
 #' @return Created dataset object
 #' @export
 create_dataset <- function(client,
-                           name,
+                           dataset_name,
                            description = '',
                            project_ids = c(),
                            project_names = c(),
                            metadata = list()) {
     
     # Check if a dataset with the same name already exists
-    dataset_check <- get_dataset(client, dataset_name = name)
+    dataset_check <- get_dataset(client, dataset_name = dataset_name)
 
     if (length(dataset_check) > 0) {
         stop('Dataset with the same name already exists')
@@ -323,7 +334,7 @@ create_dataset <- function(client,
 
     res <- create_fastq_dataset_rs(
                         client = client,
-                        name = name,
+                        name = dataset_name,
                         description = description,
                         qc_passed = FALSE,
                         paired_end = FALSE,
@@ -334,6 +345,106 @@ create_dataset <- function(client,
 
     return(res)
 }
+
+
+#' update_dataset
+#'
+#' Update a dataset defined by dataset_id
+#' NULL values in the arguments will not be updated
+#' 
+#' @param client ReadStore client
+#' @param dataset_id Dataset ID
+#' @param dataset_name Dataset name (NULL or string)
+#' @param description Dataset description (NULL or string)
+#' @param project_ids Vector of project IDs (NULL or vector)
+#' @param project_names Vector of project names (NULL or vector)
+#' @param metadata Named list of metadata (NULL or list)
+#' @return Created dataset object
+#' @export
+update_dataset <- function(client,
+                           dataset_id,
+                           dataset_name = NULL,
+                           description = NULL,
+                           project_ids = NULL,
+                           project_names = NULL,
+                           metadata = NULL) {
+    
+    # Check if a dataset with the same name already exists
+    dataset_check <- get_dataset(client, dataset_id = dataset_id)
+
+    if (length(dataset_check) == 0) {
+        stop('Dataset not found')
+    }
+
+    # Validate project_ids and project_names
+    if (!is.null(project_ids)) {
+
+        if (!is.vector(project_ids)) {
+            stop('project_ids must be a vector')
+        }
+
+        existing_project_ids <- sapply(project_ids, function(id) {
+            project <- get_project_rs(client, project_id = id)
+            return(!is.null(project))
+        })
+        if (!all(existing_project_ids)) {
+            stop('One or more project_ids do not exist in the database')
+        } else {
+            project_ids <- as.list(project_ids)
+        }
+    }
+
+    if (!is.null(project_names)) {
+
+        if (!is.vector(project_names)) {
+            stop('project_names must be a vector')
+        }
+
+        existing_project_names <- sapply(project_names, function(name) {
+            project <- get_project_rs(client, project_name = name)
+            return(!is.null(project))
+        })
+        if (!all(existing_project_names)) {
+            stop('One or more project_names do not exist in the database')
+        } else {
+            project_names <- as.list(project_names)
+        }
+    }
+
+    # Define 
+    dataset_name_new <- ifelse(is.null(dataset_name), dataset_check$name, dataset_name)
+    description_new <- ifelse(is.null(description), dataset_check$description, description)
+    
+    if (is.null(metadata)) {
+        metadata_new <- dataset_check[['metadata']]
+    } else {
+        metadata_new <- metadata
+    }
+    
+    if (is.null(project_ids)) {
+        project_ids_new <- dataset_check[['project_ids']]
+    } else {
+        project_ids_new <- project_ids
+    }
+
+    if (is.null(project_names)) {
+        project_names_new <- dataset_check[['project_names']]
+    } else {
+        project_names_new <- project_names
+    }
+
+    update_fastq_dataset_rs(client = client,
+                            dataset_id = dataset_id,
+                            name = dataset_name_new,
+                            description = description_new,
+                            qc_passed = dataset_check$qc_passed,
+                            paired_end = dataset_check$paired_end,
+                            index_read = dataset_check$index_read,
+                            project_ids = project_ids_new,
+                            project_names = project_names_new,
+                            metadata = metadata_new)
+}
+
 
 
 #' delete_dataset
@@ -574,12 +685,12 @@ get_project <- function(client,
 #' @return The created project object
 #' @export
 create_project <- function(client,
-                           name,
+                           project_name,
                            description = '',
                            metadata = list(),
                            dataset_metadata_keys = c()) {
     
-    project_check <- get_project(client, project_name = name)
+    project_check <- get_project(client, project_name = project_name)
     if (length(project_check) > 0) {
         stop("Project with the same name already exists")
     }
@@ -594,7 +705,7 @@ create_project <- function(client,
 
     result <- create_project_rs(
         client = client,
-        name = name,
+        name = project_name,
         description = description,
         metadata = metadata,
         dataset_metadata_keys = dataset_metadata_keys
@@ -602,6 +713,60 @@ create_project <- function(client,
 
     return(result)
 }
+
+
+#' update_project
+#'
+#' Update a dataset defined by dataset_id
+#' NULL values in the arguments will not be updated
+#' 
+#' @param client ReadStore client
+#' @param project_id Dataset ID
+#' @param project_name Dataset name (NULL or string)
+#' @param description Dataset description (NULL or string)
+#' @param metadata Named list of metadata (NULL or list)
+#' @param dataset_metadata_keys Named list of metadata (NULL or vector)
+#' @return Created dataset object
+#' @export
+update_project <- function(client,
+                           project_id,
+                           project_name = NULL,
+                           description = NULL,
+                           metadata = NULL,
+                           dataset_metadata_keys = NULL) {
+    
+    # Check if a dataset with the same name already exists
+    project_check <- get_project(client, project_id = project_id)
+
+    if (length(project_check) == 0) {
+        stop('Project Not Found')
+    }
+
+    # Define 
+    project_name_new <- ifelse(is.null(project_name), project_check$name, project_name)
+    description_new <- ifelse(is.null(description), project_check$description, description)
+    
+    if (is.null(metadata)) {
+        metadata_new <- project_check[['metadata']]
+    } else {
+        metadata_new <- metadata
+    }
+    
+    if (is.null(dataset_metadata_keys)) {
+        dataset_metadata_keys_new <- project_check[['dataset_metadata_keys']]
+    } else {
+        dataset_metadata_keys_new <- dataset_metadata_keys
+        dataset_metadata_keys_new <- as.list(setNames(rep('', length(dataset_metadata_keys_new)), dataset_metadata_keys_new))
+    }
+
+    update_project_rs(client = client,
+                        project_id = project_id,
+                        name = project_name_new,
+                        description = description_new,
+                        metadata = metadata_new,
+                        dataset_metadata_keys = dataset_metadata_keys_new)
+}
+
 
 
 #' delete_project
@@ -613,7 +778,10 @@ create_project <- function(client,
 #' @param project_name Project name to delete
 #' @return ID of the deleted project
 #' @export
-delete_project <- function(client, project_id = NULL, project_name = NULL) {
+delete_project <- function(client,
+    project_id = NULL,
+    project_name = NULL) {
+    
     if (is.null(project_id) && is.null(project_name)) {
         stop("project_id or project_name is required")
     }
