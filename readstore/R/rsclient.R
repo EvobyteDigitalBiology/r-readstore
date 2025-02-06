@@ -978,7 +978,7 @@ update_project_rs <- function(client,
     if (length(dataset_metadata_keys) == 0) {
         dataset_metadata_keys <- setNames(as.list(rep("", length(dataset_metadata_keys))), dataset_metadata_keys)
     }
-
+    
     # Prepare JSON for POST request
     json_data <- list(
         name = name,
@@ -1005,7 +1005,7 @@ update_project_rs <- function(client,
         }, error = function(e) {
         detail <- "No Message"
         })
-        stop(paste("create_project failed:", detail))
+        stop(paste("update_project failed:", detail))
     } else {
         return(httr::content(response, "parsed"))
     }
