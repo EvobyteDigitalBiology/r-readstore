@@ -6,7 +6,7 @@
 \usage{
 create_project(
   client,
-  name,
+  project_name,
   description = "",
   metadata = list(),
   dataset_metadata_keys = c()
@@ -15,13 +15,13 @@ create_project(
 \arguments{
 \item{client}{ReadStore client}
 
-\item{name}{Project name}
-
 \item{description}{Project description}
 
 \item{metadata}{List of project metadata}
 
 \item{dataset_metadata_keys}{vector of dataset metadata keys}
+
+\item{name}{Project name}
 }
 \value{
 The created project object

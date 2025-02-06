@@ -6,7 +6,7 @@
 \usage{
 create_dataset(
   client,
-  name,
+  dataset_name,
   description = "",
   project_ids = c(),
   project_names = c(),
@@ -16,8 +16,6 @@ create_dataset(
 \arguments{
 \item{client}{ReadStore client}
 
-\item{name}{Dataset name}
-
 \item{description}{Dataset description}
 
 \item{project_ids}{Vector of project IDs}
@@ -25,6 +23,8 @@ create_dataset(
 \item{project_names}{Vector of project names}
 
 \item{metadata}{Named list of metadata}
+
+\item{name}{Dataset name}
 
 \item{qc_passed}{QC Pass}
 
