@@ -62,7 +62,7 @@ get_client <- function(config_dir = '~/.readstore',
 
     # TODO: username+token should take precedence over config_dir if provided
 
-    if (xor(!(is.null(username)),(!(is.null(username))))) {
+    if (xor(!(is.null(username)),(!(is.null(token))))) {
         stop('Both Username and Token must be provided')
     # If username and token are provided, they take precedence over config file
     } else if (!(is.null(username) | is.null(token))) {
