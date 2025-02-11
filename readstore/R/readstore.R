@@ -274,16 +274,16 @@ get_dataset <- function(client,
 #' @param qc_passed QC Pass
 #' @param paired_end Paired End
 #' @param index_read Index read
-#' @param project_ids Vector of project IDs
-#' @param project_names Vector of project names
+#' @param project_ids List of project IDs
+#' @param project_names List of project names
 #' @param metadata Named list of metadata
 #' @return Created dataset object
 #' @export
 create_dataset <- function(client,
                            dataset_name,
                            description = '',
-                           project_ids = c(),
-                           project_names = c(),
+                           project_ids = list(),
+                           project_names = list(),
                            metadata = list()) {
     
     # Check if a dataset with the same name already exists
@@ -296,8 +296,8 @@ create_dataset <- function(client,
     # Validate project_ids and project_names
     if (!is.null(project_ids)) {
 
-        if (!is.vector(project_ids)) {
-            stop('project_ids must be a vector')
+        if (!is.list(project_ids)) {
+            stop('project_ids must be a list')
         }
 
         existing_project_ids <- sapply(project_ids, function(id) {
@@ -315,7 +315,7 @@ create_dataset <- function(client,
 
     if (!is.null(project_names)) {
 
-        if (!is.vector(project_names)) {
+        if (!is.list(project_names)) {
             stop('project_names must be a vector')
         }
 
@@ -356,8 +356,8 @@ create_dataset <- function(client,
 #' @param dataset_id Dataset ID
 #' @param dataset_name Dataset name (NULL or string)
 #' @param description Dataset description (NULL or string)
-#' @param project_ids Vector of project IDs (NULL or vector)
-#' @param project_names Vector of project names (NULL or vector)
+#' @param project_ids List of project IDs (NULL or vector)
+#' @param project_names List of project names (NULL or vector)
 #' @param metadata Named list of metadata (NULL or list)
 #' @return Created dataset object
 #' @export
@@ -376,30 +376,37 @@ update_dataset <- function(client,
         stop('Dataset not found')
     }
 
-    # Validate project_ids and project_names
+    project_ids_new <- NULL
+    project_names_new <- NULL
+    
+    if (is.null(project_ids) & is.null(project_names)) {
+        
+        # Case both project_ids and project_names are not specified
+        # Take over values from the existing dataset
+        
+        project_ids_new <- dataset_check[['project_ids']]
+        project_names_new <- dataset_check[['project_names']]
+    } 
+    
     if (!is.null(project_ids)) {
-
-        if (!is.vector(project_ids)) {
-            stop('project_ids must be a vector')
-        }
+        
+        # Case project_ids are specified, check if exists
 
         existing_project_ids <- sapply(project_ids, function(id) {
             project <- get_project_rs(client, project_id = id)
             return(!is.null(project))
         })
+        
         if (!all(existing_project_ids)) {
             stop('One or more project_ids do not exist in the database')
         } else {
-            project_ids <- as.list(project_ids)
+            project_ids_new <- project_ids
         }
     }
 
     if (!is.null(project_names)) {
-
-        if (!is.vector(project_names)) {
-            stop('project_names must be a vector')
-        }
-
+        
+        # Check if projects defined by name exist
         existing_project_names <- sapply(project_names, function(name) {
             project <- get_project_rs(client, project_name = name)
             return(!is.null(project))
@@ -407,9 +414,20 @@ update_dataset <- function(client,
         if (!all(existing_project_names)) {
             stop('One or more project_names do not exist in the database')
         } else {
-            project_names <- as.list(project_names)
+            project_names_new <- project_names
         }
     }
+
+    # Set project_ids and project_names to empty list if any is left NULL
+    # This is the case if only project_ids OR project_names were specified
+    if (is.null(project_ids_new)) {
+        project_ids_new <- list()
+    }
+
+    if (is.null(project_names_new)) {
+        project_names_new <- list()
+    }
+
 
     # Define 
     dataset_name_new <- ifelse(is.null(dataset_name), dataset_check$name, dataset_name)
@@ -419,18 +437,6 @@ update_dataset <- function(client,
         metadata_new <- dataset_check[['metadata']]
     } else {
         metadata_new <- metadata
-    }
-    
-    if (is.null(project_ids)) {
-        project_ids_new <- dataset_check[['project_ids']]
-    } else {
-        project_ids_new <- project_ids
-    }
-
-    if (is.null(project_names)) {
-        project_names_new <- dataset_check[['project_names']]
-    } else {
-        project_names_new <- project_names
     }
 
     update_fastq_dataset_rs(client = client,
@@ -444,8 +450,6 @@ update_dataset <- function(client,
                             project_names = project_names_new,
                             metadata = metadata_new)
 }
-
-
 
 #' delete_dataset
 #'
