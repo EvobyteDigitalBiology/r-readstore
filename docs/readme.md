@@ -177,6 +177,10 @@ datasets_metadata <- list_datasets_metadata(client)  # Get metadata for datasets
 datasets_id_25 <- get_dataset(client,                # Get detailed data for dataset 25
                              dataset_id = 25)        # return json-style R list
 
+create_dataset(client,                               # Create new dataset with name TestDataset
+              dataset_name = 'TestDataset',          # and metadata 'key' : 'value'
+              metadata = list(key = 'value'))
+
 fastq_files_dataset_25 <- get_fastq(client,          # Get individual fastq files for dataset 25
                                    dataset_id = 25)  # return json-style R nested list
 
@@ -193,6 +197,9 @@ projects_metadata <- list_projects_metadata(client) # Get metadata for projects 
 
 projects <- get_project(client,                         # Get details for MyProject
                        project_name = 'MyProject')      # return json-style list
+
+create_project(client,                        # Create new Project
+              project_name = 'MyProject2')
 
 download_project_attachment(client,                     # Download file attached to project
                             project_name = 'MyProject'
@@ -327,6 +334,17 @@ create_dataset(client,
                project_names = c(),  # Set project_names (as vector) to attach dataset to.
                metadata = list())       # Set metadata for dataset. Defaults to empty list.
 
+# Update existing Datasets
+# Optionally define attributes which should be updated
+
+update_dataset(client,
+              dataset_id,           # Set id of dataset to update
+              dataset_name = NULL,  # Updated dataset name (optional)
+              description = NULL,   # Updated description (optional)
+              project_ids = NULL,   # Updated project_ids (optional)
+              project_names = NULL, # Updated project_ids (optional)
+              metadata = NULL)      # Updated metadata (optional)
+
 # Delete Dataset (and attached FASTQ files)
 # Either dataset_id or dataset_name argument must be provided
 
@@ -386,6 +404,15 @@ create_project(client,
                 metadata = list(),  # Set Project metadata as dictionary
                 dataset_metadata_keys = c()) # Set dataset metadata as vector
 
+# Update Project
+
+update_project(client,
+                project_id,           # Set ID of project to update
+                project_name = NULL,  # Set updated project Name
+                description = NULL,   # Set updated description
+                metadata = NULL,      # Set updated metadata
+                dataset_metadata_keys = NULL) # Set updated dataset_metadata_keys
+
 # Delete ReadStore Project
 
 # Either project_id or project_name argument must be provided
@@ -395,7 +422,7 @@ delete_project(client,
                 project_name = NULL)  # Delete by Name. Defaults to None.
 ```
 
-### Access ProData
+### Edit and Access ProData
 
 ```r
 # Upload ProData
@@ -435,7 +462,6 @@ list_pro_data_metadata(client,
                         return_type = 'data.frame') # The return type (data.frame | list)
 
 # This function returns metadata for processed data (ProData) from the ReadStore API. The order of the returned metadata is the same as the ProData list. You can choose to return a list of metadata entries for each dataset or a data.frame with metadata entries where metadata keys will be cast to column names (wide format).
-
 
 # Get ProData
 
