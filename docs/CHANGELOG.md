@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.0] - 2025-02-10
+
+**Features**
+- Add method update_dataset
+- Add method update_project
+
+**Bugfixes**
+- Provided user and token in client definition take precedence over config file
+
 ## [1.3.0] - 2025-01-02
 
 **Features**
