@@ -23,9 +23,9 @@ update_dataset(
 
 \item{description}{Dataset description (NULL or string)}
 
-\item{project_ids}{Vector of project IDs (NULL or vector)}
+\item{project_ids}{List of project IDs (NULL or vector)}
 
-\item{project_names}{Vector of project names (NULL or vector)}
+\item{project_names}{List of project names (NULL or vector)}
 
 \item{metadata}{Named list of metadata (NULL or list)}
 }
