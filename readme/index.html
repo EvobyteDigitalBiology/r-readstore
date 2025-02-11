@@ -1,0 +1,1225 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../CHANGELOG/">
+      
+      
+      <link rel="icon" href="../img/favicon.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.3">
+    
+    
+      
+        <title>Readme - ReadStore R Client (SDK) Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.d7758b05.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+      <link rel="stylesheet" href="../stylesheets/mkdocsoad.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#r-readstore-sdk" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="https://evo-byte.com/readstore" title="ReadStore R Client (SDK) Docs" class="md-header__button md-logo" aria-label="ReadStore R Client (SDK) Docs" data-md-component="logo">
+      
+  <img src="../assets/BannerLarge.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ReadStore R Client (SDK) Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Readme
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+    
+  
+  Readme
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../CHANGELOG/" class="md-tabs__link">
+        
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://evo-byte.com/readstore" title="ReadStore R Client (SDK) Docs" class="md-nav__button md-logo" aria-label="ReadStore R Client (SDK) Docs" data-md-component="logo">
+      
+  <img src="../assets/BannerLarge.png" alt="logo">
+
+    </a>
+    ReadStore R Client (SDK) Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Readme
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Readme
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      Table of Contents
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-lean-solution-for-managing-ngs-and-omics-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Lean Solution for Managing NGS and Omics Data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description" class="md-nav__link">
+    <span class="md-ellipsis">
+      Description
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-and-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security and Permissions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security and Permissions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-accounts-and-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      User Accounts and Token
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-your-credentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting Your Credentials
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#readstore-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      ReadStore API
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ReadStore API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Endpoint
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-reponse" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Reponse
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quickstart" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quickstart
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-the-r-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configure the R Client
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Access Datasets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edit-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edit Datasets
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access-projects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Access Projects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edit-projects" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edit Projects
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edit-and-access-prodata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edit and Access ProData
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#download-attachments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Download Attachments
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upload-fastq-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upload FASTQ files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Upload FASTQ files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reserved-keywords" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reserved keywords
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contributing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-you-can-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      How You Can Help
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contribution-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contribution Workflow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#license" class="md-nav__link">
+    <span class="md-ellipsis">
+      License
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#credits-and-acknowledgments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Credits and Acknowledgments
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CHANGELOG/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="r-readstore-sdk">r-readstore SDK</h1>
+<p>This README describes r-readstore, the R client (SDK) for the ReadStore API. </p>
+<p>The full <strong>ReadStore Basic documentation</strong> is available <a href="https://evobytedigitalbiology.github.io/readstore/">here</a></p>
+<p>r-readstore can be used to access Projects, Datasets, ProData, metadata and attachment files in the ReadStore Database from within R code. 
+The package enables you to automate your bioinformatics pipelines, Python scripts and notebooks.</p>
+<p>Check the <a href="https://github.com/EvobyteDigitalBiology/readstore">ReadStore Github repository</a> for more information on how to get started with ReadStore and setting up your server.</p>
+<p>More infos on the <a href="https://evo-byte.com/readstore/">ReadStore website</a></p>
+<p>Tutorials and Intro Videos: https://www.youtube.com/@evobytedigitalbio</p>
+<p>Blog posts and How-Tos: https://evo-byte.com/blog/</p>
+<p>For general questions reach out to info@evo-byte.com or in case of technical problems to support@evo-byte.com</p>
+<p>Happy analysis :)</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#description">Description</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#api">ReadStore API</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#license">License</a></li>
+<li><a href="#acknowledgments">Credits and Acknowledgments</a></li>
+</ul>
+<h2 id="the-lean-solution-for-managing-ngs-and-omics-data">The Lean Solution for Managing NGS and Omics Data</h2>
+<p>ReadStore is a platform for storing, managing, and integrating omics data. It speeds up analysis and offers a simple way of managing and sharing NGS omics datasets, metadata and processed data (<strong>Pro</strong>cessed <strong>Data</strong>).
+Built-in project and metadata management structures your workflows and a collaborative user interface enhances teamwork — so you can focus on generating insights.</p>
+<p>The integrated Webservice (API) enables your to directly retrieve data from ReadStore via the terminal <a href="https://github.com/EvobyteDigitalBiology/readstore-cli">Command-Line-Interface (CLI)</a> or <a href="https://github.com/EvobyteDigitalBiology/pyreadstore">Python</a> / <a href="https://github.com/EvobyteDigitalBiology/r-readstore">R</a> SDKs.</p>
+<p>The ReadStore Basic version provides a local webserver with a simple user management. If you need an organization-wide deployment, advanced user and group management or cloud integration please check the ReadStore Advanced versions and reach out to info@evo-byte.com.</p>
+<h2 id="description">Description</h2>
+<p>r-readstore is a R client (SDK) that lets you easily connect to your ReadStore server and interact with the ReadStore API.
+By importing the readstore package in R, you can quickly retrieve data from a ReadStore server.</p>
+<p>This tool provides streamlined and standardized access to NGS datasets and metadata, helping you run analyses more efficiently and with fewer errors.
+You can easily scale your pipelines, and if you need to migrate or move NGS data, updating the ReadStore database ensures all your workflows stay up-to-date.</p>
+<h2 id="security-and-permissions">Security and Permissions<a id="backup"></a></h2>
+<p><strong>PLEASE READ AND FOLLOW THESE INSTRUCTIONS CAREFULLY!</strong></p>
+<h3 id="user-accounts-and-token">User Accounts and Token<a id="token"></a></h3>
+<p>Using <strong>r-readstore</strong> requires an active user account and a token (and a running ReadStore server). </p>
+<p>You should <strong>never enter your user account password</strong> when working with r-readstore.</p>
+<p>To retrieve your token</p>
+<ol>
+<li>Login to the ReadStore app via your browser</li>
+<li>Navigate to <code>Settings</code> page and click on <code>Token</code></li>
+<li>You can regenerate your token anytime (<code>Reset</code>). This will invalidate the previous token</li>
+</ol>
+<p>For uploading FASTQ files your user account needs to have <code>Staging Permission</code>.
+You can check this in the <code>Settings</code> page of your account.
+If you not have <code>Staging Permission</code>, ask your ReadStore server admin to grant you permission.</p>
+<h3 id="setting-your-credentials">Setting Your Credentials</h3>
+<p>You need to provide the r-readstore client with valid ReadStore credentials.</p>
+<p>There are different options</p>
+<ol>
+<li>
+<p>Load credentials from the ReadStore <code>config</code> file. 
+The file is generated by the <a href="https://github.com/EvobyteDigitalBiology/readstore-cli">ReadStore CLI</a>,
+by default in your home directory (<code>~/.readstore/</code>). Make sure to keep read permissions to the file restrictive</p>
+</li>
+<li>
+<p>Directly enter your username and token when instantiating a r-readstore client within your R code</p>
+</li>
+<li>
+<p>Set username and token via environment variables (<code>READSTORE_USERNAME</code>, <code>READSTORE_TOKEN</code>). This is useful in container or cloud environments.</p>
+</li>
+</ol>
+<h2 id="installation">Installation</h2>
+<p>In your R environment you can directly install the readstore client from the r-readstore
+<a href="https://github.com/EvobyteDigitalBiology/r-readstore">GitHub repository</a></p>
+<div class="highlight"><pre><span></span><code><span class="c1"># with remotes library</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">remotes</span><span class="p">)</span>
+<span class="n">remotes</span><span class="o">::</span><span class="nf">install_github</span><span class="p">(</span><span class="s">&#39;https://github.com/EvobyteDigitalBiology/r-readstore&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">subdir</span><span class="o">=</span><span class="s">&#39;readstore&#39;</span><span class="p">)</span>
+
+<span class="c1"># or with devtools library</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">devtools</span><span class="p">)</span>
+<span class="n">devtools</span><span class="o">::</span><span class="nf">install_github</span><span class="p">(</span><span class="s">&#39;https://github.com/EvobyteDigitalBiology/r-readstore&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">subdir</span><span class="o">=</span><span class="s">&#39;readstore&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p>Validate the successful install by running</p>
+<div class="highlight"><pre><span></span><code><span class="nf">library</span><span class="p">(</span><span class="n">readstore</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="readstore-api">ReadStore API<a id="api"></a></h2>
+<p>The <strong>ReadStore Basic</strong> server provides a RESTful API for accessing resources via HTTP requests.<br />
+This API extends the functionalities of the ReadStore CLI as well as the Python and R SDKs.</p>
+<h3 id="api-endpoint">API Endpoint</h3>
+<p>By default, the API is accessible at:<br />
+<code>http://127.0.0.1:8000/api_x_v1/</code></p>
+<h3 id="authentication">Authentication</h3>
+<p>Users must authenticate using their username and token via the Basic Authentication scheme.</p>
+<h3 id="example-usage">Example Usage</h3>
+<p>Below is an example demonstrating how to use the ReadStore CLI to retrieve an overview of Projects by sending an HTTP <code>GET</code> request to the <code>project/</code> endpoint.<br />
+In this example, the username is <code>testuser</code>, and the token is <code>0dM9qSU0Q5PLVgDrZRftzw</code>. You can find your token in the ReadStore settings.</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>GET<span class="w"> </span>-u<span class="w"> </span>testuser:0dM9qSU0Q5PLVgDrZRftzw<span class="w"> </span>http://localhost:8000/api_x_v1/project/
+</code></pre></div>
+<h4 id="example-reponse">Example Reponse</h4>
+<p>A successful HTTP response returns a JSON-formatted string describing the project(s) in the ReadStore database. Example response:</p>
+<div class="highlight"><pre><span></span><code>[{
+  &quot;id&quot;: 4,
+  &quot;name&quot;: &quot;TestProject99&quot;,
+  &quot;metadata&quot;: {
+    &quot;key1&quot;: &quot;value1&quot;,
+    &quot;key2&quot;: &quot;value2&quot;
+  },
+  &quot;attachments&quot;: []
+}]
+</code></pre></div>
+<h3 id="documentation">Documentation</h3>
+<p>Comprehensive <a href="https://evobytedigitalbiology.github.io/readstore/rest_api/">API documentation</a> is available in the ReadStore Basic Docs.</p>
+<h2 id="usage">Usage</h2>
+<p>Detailed tutorials, videos and explanations are found on <a href="https://www.youtube.com/playlist?list=PLk-WMGySW9ySUfZU25NyA5YgzmHQ7yquv">YouTube</a> or on the <a href="https://evo-byte.com/blog"><strong>EVO</strong>BYTE blog</a>.</p>
+<h3 id="quickstart">Quickstart</h3>
+<p>Let's access some dataset and project data from the ReadStore database!</p>
+<p>Make sure a ReadStore server is running and reachable (by default under <code>127.0.0.1:8000</code>).
+You can enter (<code>http://127.0.0.1:8000/api_x_v1/</code>) in your browser and should get a response from the API.</p>
+<p>We assume you ran <code>readstore configure</code> before to create a config file for your user.
+If not, consult the <a href="https://github.com/EvobyteDigitalBiology/readstore-cli">ReadStore CLI</a> README on how to set this up.</p>
+<p>We first will create the R client and perform some operations to retrieve data from the ReadStore database.
+More information on all available methods can be found below.</p>
+<div class="highlight"><pre><span></span><code><span class="nf">library</span><span class="p">(</span><span class="n">readstore</span><span class="p">)</span>
+
+<span class="n">client</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">get_client</span><span class="p">()</span><span class="w">  </span><span class="c1"># Create an instance of the ReadStore client</span>
+
+<span class="c1"># Manage Datasets </span>
+
+<span class="n">datasets</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list_datasets</span><span class="p">(</span><span class="n">client</span><span class="p">)</span><span class="w">          </span><span class="c1"># List all datasets and return json-style list of list</span>
+
+<span class="n">datasets_project_1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list_datasets</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">          </span><span class="c1"># List all datasets for project 1</span>
+<span class="w">                                    </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w">  </span><span class="c1"># return data.frame</span>
+
+<span class="n">datasets_metadata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list_datasets_metadata</span><span class="p">(</span><span class="n">client</span><span class="p">)</span><span class="w">  </span><span class="c1"># Get metadata for datasets cast to data.frame</span>
+<span class="w">                                                     </span><span class="c1"># metadata keys as column names</span>
+
+<span class="n">datasets_id_25</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">get_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                </span><span class="c1"># Get detailed data for dataset 25</span>
+<span class="w">                             </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">)</span><span class="w">        </span><span class="c1"># return json-style R list</span>
+
+<span class="nf">create_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                               </span><span class="c1"># Create new dataset with name TestDataset</span>
+<span class="w">              </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;TestDataset&#39;</span><span class="p">,</span><span class="w">          </span><span class="c1"># and metadata &#39;key&#39; : &#39;value&#39;</span>
+<span class="w">              </span><span class="n">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;value&#39;</span><span class="p">))</span>
+
+<span class="n">fastq_files_dataset_25</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">get_fastq</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">          </span><span class="c1"># Get individual fastq files for dataset 25</span>
+<span class="w">                                   </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">)</span><span class="w">  </span><span class="c1"># return json-style R nested list</span>
+
+<span class="nf">download_dataset_attachment</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                 </span><span class="c1"># Download file attached to dataset 25</span>
+<span class="w">                            </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">,</span><span class="w">        </span>
+<span class="w">                            </span><span class="n">attachment_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;gene_table.tsv&#39;</span><span class="p">)</span><span class="w"> </span>
+
+<span class="c1"># Manage Projects</span>
+
+<span class="n">projects</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list_projects</span><span class="p">(</span><span class="n">client</span><span class="p">)</span><span class="w">          </span><span class="c1"># List all projects and return data.frame</span>
+
+<span class="n">projects_metadata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list_projects_metadata</span><span class="p">(</span><span class="n">client</span><span class="p">)</span><span class="w"> </span><span class="c1"># Get metadata for projects cast to data.frame</span>
+<span class="w">                                                    </span><span class="c1"># metadata keys as column names</span>
+
+<span class="n">projects</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">get_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                         </span><span class="c1"># Get details for MyProject</span>
+<span class="w">                       </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;MyProject&#39;</span><span class="p">)</span><span class="w">      </span><span class="c1"># return json-style list</span>
+
+<span class="nf">create_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                        </span><span class="c1"># Create new Project</span>
+<span class="w">              </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;MyProject2&#39;</span><span class="p">)</span>
+
+<span class="nf">download_project_attachment</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                     </span><span class="c1"># Download file attached to project</span>
+<span class="w">                            </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;MyProject&#39;</span>
+<span class="w">                            </span><span class="n">attachment_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;project_plan.pptx&#39;</span><span class="p">)</span>
+
+<span class="c1"># Upload FASTQ datasets</span>
+
+<span class="nf">upload_fastq</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                                                 </span><span class="c1"># Upload FASTQ files</span>
+<span class="w">            </span><span class="n">fastq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&#39;path/to/fastq_R1.fq&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;path/to/fastq_R2.fq&#39;</span><span class="p">),</span><span class="w"> </span><span class="c1"># Define path to FASTQ  </span>
+<span class="w">            </span><span class="n">fastq_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&#39;sample_R1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;sample_R2&#39;</span><span class="p">),</span><span class="w">                </span><span class="c1"># Set names of FASTQ files</span>
+<span class="w">            </span><span class="n">read_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&#39;R1&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;R2&#39;</span><span class="p">))</span><span class="w">                               </span><span class="c1"># Define type of Read</span>
+
+<span class="c1"># Manage ProData</span>
+
+<span class="nf">upload_pro_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                                         </span><span class="c1"># Upload Processed Data files</span>
+<span class="w">                </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;sample_1_count_matrix&#39;</span><span class="p">,</span><span class="w">                 </span><span class="c1"># Set name of count matrix</span>
+<span class="w">                </span><span class="n">pro_data_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;path/to/sample_1_counts.h5&#39;</span><span class="p">,</span><span class="w">   </span><span class="c1"># Set file path</span>
+<span class="w">                </span><span class="n">data_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;count_matrix&#39;</span><span class="p">,</span><span class="w">                     </span><span class="c1"># Set type to &#39;count_matrix&#39;</span>
+<span class="w">                </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">)</span><span class="w">                                </span><span class="c1"># Attach ProData to dataset_id 25</span>
+
+<span class="n">pro_data_list</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list_pro_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                </span><span class="c1"># List Processed Data (ProData)</span>
+<span class="w">                            </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">)</span><span class="w">          </span><span class="c1"># Get ProData for dataset_id 25</span>
+
+<span class="n">pro_data_metadata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list_pro_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                   </span><span class="c1"># List ProData metadata as data.frame</span>
+<span class="w">                                   </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">)</span><span class="w">          </span><span class="c1"># For dataset_id 25</span>
+
+<span class="n">pro_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">get_pro_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                         </span><span class="c1"># Get individual ProData entry</span>
+<span class="w">                        </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;sample_1_count_matrix&#39;</span><span class="p">,</span><span class="w">  </span><span class="c1"># Get ProData with name &#39;sample_1_count_matrix&#39;</span>
+<span class="w">                        </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">)</span><span class="w">                 </span><span class="c1"># Get ProData for dataset_id 25</span>
+
+<span class="n">pro_data</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">delete_pro_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                         </span><span class="c1"># Delete ProData</span>
+<span class="w">                           </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;sample_1_count_matrix&#39;</span><span class="p">,</span><span class="w">  </span><span class="c1"># Get ProData with name &#39;sample_1_count_matrix&#39;</span>
+<span class="w">                           </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span><span class="p">)</span><span class="w">                 </span><span class="c1"># Get ProData for dataset_id 25</span>
+</code></pre></div>
+<h3 id="configure-the-r-client">Configure the R Client</h3>
+<p>The Client is the central object and provides authentication against the ReadStore API.
+By default, the client will try to read the <code>~/.readstore/config</code> credentials file.
+You can change the directory if your config file is located in another folder.</p>
+<p>If you set the <code>username</code> and <code>token</code> arguments, the client will use these credentials instead.</p>
+<p>If your ReadStore server is not running under localhost (<code>127.0.0.1</code>) port <code>8000</code>, you can adapt the default settings.</p>
+<div class="highlight"><pre><span></span><code><span class="n">client</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">get_client</span><span class="p">(</span><span class="n">config_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;~/.readstore&#39;</span><span class="p">,</span><span class="w">  </span><span class="c1"># Directory containing ReadStore credentials</span>
+<span class="w">                    </span><span class="n">username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">               </span><span class="c1"># Username</span>
+<span class="w">                    </span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">                  </span><span class="c1"># Token</span>
+<span class="w">                    </span><span class="n">host</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;http://localhost&#39;</span><span class="p">,</span><span class="w">     </span><span class="c1"># Hostname / IP of ReadStore server</span>
+<span class="w">                    </span><span class="n">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8000</span><span class="p">,</span><span class="w">                   </span><span class="c1"># Server Port Number</span>
+<span class="w">                    </span><span class="n">fastq_extensions</span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&#39;.fastq&#39;</span><span class="p">,</span><span class="s">&#39;.fastq.gz&#39;</span><span class="p">,</span><span class="s">&#39;.fq&#39;</span><span class="p">,</span><span class="s">&#39;.fq.gz&#39;</span><span class="p">))</span><span class="w"> </span>
+<span class="w">                    </span><span class="c1"># Accepted FASTQ file extensions for upload validation </span>
+</code></pre></div>
+<p>Is is possible to set userame, token, server endpoint and fastq extensions using the listed environment variables. 
+The enironment variables precede over other client configurations.</p>
+<ul>
+<li><code>READSTORE_USERNAME</code> (username)</li>
+<li><code>READSTORE_TOKEN</code>    (token)</li>
+<li><code>READSTORE_ENDPOINT_URL</code> (<code>http://host:post</code>, e.g. <code>http://localhost:8000</code>)</li>
+<li><code>READSTORE_FASTQ_EXTENSIONS</code> (fastq_extensions, <code>'.fastq',.fastq.gz,.fq,.fq.gz'</code>)</li>
+</ul>
+<p><strong>Possible errors</strong></p>
+<pre><code>- Connection Error:     If no ReadStore server was found at the provided endpoint
+- Authentication Error: If provided username or token are not found
+- No Permission to Upload/Delete FASTQ/ProData: User has no [Staging Permissions]
+</code></pre>
+<h3 id="access-datasets">Access Datasets</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># List ReadStore Datasets</span>
+
+<span class="c1"># Option to subset by project_id OR project_name</span>
+<span class="c1"># Option to return either a data.frame or list </span>
+
+<span class="nf">list_datasets</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">              </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">            </span><span class="c1"># Filter datasets for project with id `project_id`</span>
+<span class="w">              </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="w">           </span><span class="c1"># Filter datasets for project with name `project_name`</span>
+<span class="w">              </span><span class="n">return_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;data.frame&#39;</span><span class="p">)</span><span class="w">   </span><span class="c1"># return_type (data.frame | list)</span>
+
+<span class="c1"># List ReadStore Dataset Metadata</span>
+
+<span class="c1"># Returns formatted metadata for each dataset</span>
+<span class="c1"># Metadata keys are cast into data.frame columns (wide-format)</span>
+
+<span class="c1"># Option to subset by project_id OR project_name</span>
+<span class="c1"># Option to return either a data.frame or list </span>
+
+<span class="nf">list_datasets_metadata</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">            </span><span class="c1"># Filter metadata for project with id `project_id`</span>
+<span class="w">                    </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="w">           </span><span class="c1"># Filter metadata for project with name `project_name`</span>
+<span class="w">                    </span><span class="n">return_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;data.frame&#39;</span><span class="p">)</span><span class="w">   </span><span class="c1"># return_type (data.frame | list)</span>
+
+<span class="c1"># Get ReadStore Dataset Details</span>
+
+<span class="c1"># MUST provide dataset_id OR dataset_name</span>
+<span class="c1"># Option to return either a data.frame or list </span>
+
+<span class="nf">get_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">            </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span>
+<span class="w">            </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w"> </span><span class="c1"># Return json style list</span>
+
+<span class="c1"># Get FASTQ file(s)for a specific dataset</span>
+
+<span class="c1"># Must provide dataset_id OR dataset_name</span>
+
+<span class="nf">get_fastq</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">          </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">       </span><span class="c1"># Get fastq data for dataset with id `dataset_id`</span>
+<span class="w">          </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">     </span><span class="c1"># Get fastq data for dataset `dataset_name`</span>
+<span class="w">                                   </span><span class="c1"># Return  json style list of lists</span>
+</code></pre></div>
+<h3 id="edit-datasets">Edit Datasets</h3>
+<p><strong>NOTE</strong> Editing methods as create or delete require <code>Staging Permission</code> authorization.</p>
+<p>When creating datasets, the <code>name</code> argument and <code>metadata</code> dictionary are checked for consistency: Each must not be empty, contain only alphanumeric characters (plus _-.@). Metadata keys must not contain reserved keywords (listed below).</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create an empty Dataset, without FASTQ files attached</span>
+
+<span class="c1"># Name must be unique in Database</span>
+<span class="c1"># Optionally define Project IDs and/or Project names to attach Dataset to.  </span>
+
+<span class="nf">create_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">               </span><span class="n">name</span><span class="p">,</span><span class="w">                    </span><span class="c1"># Set name</span>
+<span class="w">               </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="w">        </span><span class="c1"># Set description. Defaults to &#39;&#39;</span>
+<span class="w">               </span><span class="n">project_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(),</span><span class="w">    </span><span class="c1"># Set project_ids (as vector) to attach dataset to.</span>
+<span class="w">               </span><span class="n">project_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(),</span><span class="w">  </span><span class="c1"># Set project_names (as vector) to attach dataset to.</span>
+<span class="w">               </span><span class="n">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">())</span><span class="w">       </span><span class="c1"># Set metadata for dataset. Defaults to empty list.</span>
+
+<span class="c1"># Update existing Datasets</span>
+<span class="c1"># Optionally define attributes which should be updated</span>
+
+<span class="nf">update_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">              </span><span class="n">dataset_id</span><span class="p">,</span><span class="w">           </span><span class="c1"># Set id of dataset to update</span>
+<span class="w">              </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">  </span><span class="c1"># Updated dataset name (optional)</span>
+<span class="w">              </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">   </span><span class="c1"># Updated description (optional)</span>
+<span class="w">              </span><span class="n">project_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">   </span><span class="c1"># Updated project_ids (optional)</span>
+<span class="w">              </span><span class="n">project_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="c1"># Updated project_ids (optional)</span>
+<span class="w">              </span><span class="n">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">      </span><span class="c1"># Updated metadata (optional)</span>
+
+<span class="c1"># Delete Dataset (and attached FASTQ files)</span>
+<span class="c1"># Either dataset_id or dataset_name argument must be provided</span>
+
+<span class="nf">delete_dataset</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">               </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">   </span><span class="c1"># Delete by ID.</span>
+<span class="w">               </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w"> </span><span class="c1"># Delete by Name.</span>
+</code></pre></div>
+<h3 id="access-projects">Access Projects</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># List ReadStore Projects</span>
+
+<span class="nf">list_projects</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">              </span><span class="n">return_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;data.frame&#39;</span><span class="p">)</span><span class="w"> </span><span class="c1"># Return type (data.frame | list)</span>
+
+
+<span class="c1"># Get Metadata for Projects from ReadStore</span>
+
+<span class="c1"># Return metadata for projects from the ReadStore API</span>
+<span class="c1"># Order of returned projects is the same as the dataset list</span>
+
+<span class="c1"># Return a list of metadata entries for each project</span>
+
+<span class="c1"># or return a data.frame with metadata entries</span>
+<span class="c1"># Here metadata keys will be cast to column names (wide format)</span>
+
+<span class="nf">list_projects_metadata</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">                       </span><span class="n">return_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;data.frame&#39;</span><span class="p">)</span><span class="w">  </span><span class="c1"># The return type (data.frame | list)</span>
+
+
+<span class="c1"># Get ReadStore Project Details</span>
+
+<span class="c1"># Must provide project_id OR project_name</span>
+
+<span class="nf">get_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">            </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">    </span><span class="c1"># Get project with id `project_id`</span>
+<span class="w">            </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">  </span><span class="c1"># Filter project with name `project_name`</span>
+</code></pre></div>
+<h3 id="edit-projects">Edit Projects</h3>
+<p><strong>NOTE</strong> Editing methods as create or delete require <code>Staging Permission</code> authorization.</p>
+<p>When creating datasets, the <code>name</code> argument and <code>metadata</code> dictionary are checked for consistency: Each must not be empty, contain only alphanumeric characters (plus _-.@). Metadata keys must not contain reserved keywords (listed below).</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create ReadStore Project</span>
+
+<span class="c1"># name must be unique in Database</span>
+<span class="c1"># dataset_metadata_keys can be attached and will be set as default metadata keys for attached datasets</span>
+
+<span class="nf">create_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">                </span><span class="n">name</span><span class="p">,</span><span class="w">               </span><span class="c1"># Set Project name</span>
+<span class="w">                </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="p">,</span><span class="w">   </span><span class="c1"># Set Project description</span>
+<span class="w">                </span><span class="n">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(),</span><span class="w">  </span><span class="c1"># Set Project metadata as dictionary</span>
+<span class="w">                </span><span class="n">dataset_metadata_keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">())</span><span class="w"> </span><span class="c1"># Set dataset metadata as vector</span>
+
+<span class="c1"># Update Project</span>
+
+<span class="nf">update_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">                </span><span class="n">project_id</span><span class="p">,</span><span class="w">           </span><span class="c1"># Set ID of project to update</span>
+<span class="w">                </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">  </span><span class="c1"># Set updated project Name</span>
+<span class="w">                </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">   </span><span class="c1"># Set updated description</span>
+<span class="w">                </span><span class="n">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">      </span><span class="c1"># Set updated metadata</span>
+<span class="w">                </span><span class="n">dataset_metadata_keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w"> </span><span class="c1"># Set updated dataset_metadata_keys</span>
+
+<span class="c1"># Delete ReadStore Project</span>
+
+<span class="c1"># Either project_id or project_name argument must be provided</span>
+
+<span class="nf">delete_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">                </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">    </span><span class="c1"># Delete by ID. Defaults to None.</span>
+<span class="w">                </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">  </span><span class="c1"># Delete by Name. Defaults to None.</span>
+</code></pre></div>
+<h3 id="edit-and-access-prodata">Edit and Access ProData</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Upload ProData</span>
+
+<span class="nf">upload_pro_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">                </span><span class="n">name</span><span class="p">,</span><span class="w">                </span><span class="c1"># name of ProData entry</span>
+<span class="w">                </span><span class="n">pro_data_path</span><span class="p">,</span><span class="w">       </span><span class="c1"># Path to Processed Data file</span>
+<span class="w">                </span><span class="n">data_type</span><span class="p">,</span><span class="w">           </span><span class="c1"># Type of dataset (e.g. count_matrix)</span>
+<span class="w">                </span><span class="n">metadata</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">list</span><span class="p">(),</span><span class="w">   </span><span class="c1"># Metadata key values list for ProData</span>
+<span class="w">                </span><span class="n">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w">    </span><span class="c1"># Set description</span>
+<span class="w">                </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">   </span><span class="c1"># Dataset ID to attach ProData to </span>
+<span class="w">                </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w"> </span><span class="c1"># Dataset Name to attach ProData to</span>
+
+<span class="c1"># List ProData</span>
+
+<span class="nf">list_pro_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">                </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">       </span><span class="c1"># Filter by Project ID</span>
+<span class="w">                </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">     </span><span class="c1"># Filter by Project Name</span>
+<span class="w">                </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">       </span><span class="c1"># Filter by Dataset ID</span>
+<span class="w">                </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">     </span><span class="c1"># Filter by Dataset Name</span>
+<span class="w">                </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">             </span><span class="c1"># Filter by Name</span>
+<span class="w">                </span><span class="n">data_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">        </span><span class="c1"># Filter by Data Type</span>
+<span class="w">                </span><span class="n">include_archived</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="c1"># Return archived ProData</span>
+<span class="w">                </span><span class="n">return_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;data.frame&#39;</span><span class="p">)</span><span class="w"> </span><span class="c1"># The return type (data.frame | list)</span>
+
+
+<span class="c1"># List ProData Metadata</span>
+
+<span class="nf">list_pro_data_metadata</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">       </span><span class="c1"># Filter by Project ID</span>
+<span class="w">                        </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">     </span><span class="c1"># Filter by Project Name</span>
+<span class="w">                        </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">       </span><span class="c1"># Filter by Dataset ID</span>
+<span class="w">                        </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">     </span><span class="c1"># Filter by Dataset Name</span>
+<span class="w">                        </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">             </span><span class="c1"># Filter by Name</span>
+<span class="w">                        </span><span class="n">data_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">        </span><span class="c1"># Filter by Data Type</span>
+<span class="w">                        </span><span class="n">include_archived</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="c1"># Return archived ProData</span>
+<span class="w">                        </span><span class="n">return_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;data.frame&#39;</span><span class="p">)</span><span class="w"> </span><span class="c1"># The return type (data.frame | list)</span>
+
+<span class="c1"># This function returns metadata for processed data (ProData) from the ReadStore API. The order of the returned metadata is the same as the ProData list. You can choose to return a list of metadata entries for each dataset or a data.frame with metadata entries where metadata keys will be cast to column names (wide format).</span>
+
+<span class="c1"># Get ProData</span>
+
+<span class="nf">get_pro_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">            </span><span class="n">pro_data_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">     </span><span class="c1"># Get ProData by ID</span>
+<span class="w">            </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">            </span><span class="c1"># Get ProData by Name</span>
+<span class="w">            </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">         </span><span class="c1"># Get Specific Version</span>
+<span class="w">            </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">      </span><span class="c1"># Get ProData by dataset_id</span>
+<span class="w">            </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">    </span><span class="c1"># Get ProData by dataset_name</span>
+
+<span class="c1"># Must provide pro_data_id OR (dataset_name/dataset_id and name)</span>
+
+<span class="c1"># Delete ProData</span>
+
+<span class="nf">delete_pro_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                 </span>
+<span class="w">                </span><span class="n">pro_data_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">  </span><span class="c1"># Get ProData by ID</span>
+<span class="w">                </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">         </span><span class="c1"># Get ProData by Name    </span>
+<span class="w">                </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">   </span><span class="c1"># Get ProData by dataset_id</span>
+<span class="w">                </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="c1"># Get ProData by dataset_name</span>
+<span class="w">                </span><span class="n">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">      </span><span class="c1"># Set specific version to delete</span>
+
+<span class="c1"># Must provide pro_data_id OR (dataset_name/dataset_id and name)</span>
+</code></pre></div>
+<h3 id="download-attachments">Download Attachments</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Download project attachment file from ReadStore Database</span>
+
+<span class="c1"># Must provide project_id OR project_name</span>
+
+<span class="nf">download_project_attachment</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">                            </span><span class="n">attachment_name</span><span class="p">,</span><span class="w">          </span><span class="c1"># name of attachment file</span>
+<span class="w">                            </span><span class="n">project_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">        </span><span class="c1"># project id with attachment</span>
+<span class="w">                            </span><span class="n">project_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">      </span><span class="c1"># project name with attachment</span>
+<span class="w">                            </span><span class="n">outpath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">           </span><span class="c1"># Path to download file to</span>
+<span class="w">                                                      </span><span class="c1"># default NULL download to working dir</span>
+
+<span class="c1"># Download dataset attachment file from ReadStore Database </span>
+
+<span class="c1"># Must provide dataset_id OR dataset_name</span>
+
+<span class="nf">download_dataset_attachment</span><span class="p">(</span><span class="n">client</span><span class="p">,</span>
+<span class="w">                            </span><span class="n">attachment_name</span><span class="p">,</span><span class="w">             </span><span class="c1"># name of attachment file</span>
+<span class="w">                            </span><span class="n">dataset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">           </span><span class="c1"># datatset id with attachment</span>
+<span class="w">                            </span><span class="n">dataset_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w">         </span><span class="c1"># datatset name with attachment</span>
+<span class="w">                            </span><span class="n">outpath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">              </span><span class="c1"># Path to download file to</span>
+</code></pre></div>
+<h3 id="upload-fastq-files">Upload FASTQ files</h3>
+<p>Upload FASTQ files to ReadStore server. The methods checks if the FASTQ files exist and end with valid FASTQ ending.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Upload FASTQ files to ReadStore </span>
+
+<span class="nf">upload_fastq</span><span class="p">(</span><span class="n">client</span><span class="p">,</span><span class="w">                                         </span>
+<span class="w">             </span><span class="n">fastq</span><span class="p">,</span><span class="w">             </span><span class="c1"># Path to FASTQ file (string/vector)</span>
+<span class="w">             </span><span class="n">fastq_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="c1"># Names of FASTQ files (string/vector)</span>
+<span class="w">             </span><span class="n">read_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span><span class="w">  </span><span class="c1"># Read Types (string/vector)</span>
+</code></pre></div>
+<h4 id="reserved-keywords">Reserved keywords</h4>
+<p>The following keywords must not be used as metadata keys</p>
+<div class="highlight"><pre><span></span><code>&#39;id&#39;,&#39;name&#39;,&#39;project&#39;,&#39;project_ids&#39;,&#39;project_names&#39;,&#39;owner_group_name&#39;,&#39;qc_passed&#39;,&#39;paired_end&#39;,
+&#39;index_read&#39;,&#39;created&#39;,&#39;description&#39;,&#39;owner_username&#39;,&#39;fq_file_r1&#39;,&#39;fq_file_r2&#39;,&#39;fq_file_i1&#39;,
+&#39;fq_file_i2&#39;,&#39;id_project&#39;,&#39;name_project&#39;,&#39;name_og&#39;,&#39;archived&#39;,&#39;collaborators&#39;,&#39;dataset_metadata_keys&#39;,
+&#39;data_type&#39;,&#39;version&#39;,&#39;valid_to&#39;,&#39;upload_path&#39;,&#39;owner_username&#39;,&#39;fq_dataset&#39;,&#39;id_fq_dataset&#39;,&#39;name_fq_dataset&#39;
+</code></pre></div>
+<h2 id="contributing">Contributing</h2>
+<p>Contributions make this project better! Whether you want to report a bug, improve documentation, or add new features, any help is welcomed!</p>
+<h3 id="how-you-can-help">How You Can Help</h3>
+<ul>
+<li>Report Bugs</li>
+<li>Suggest Features</li>
+<li>Improve Documentation</li>
+<li>Code Contributions</li>
+</ul>
+<h3 id="contribution-workflow">Contribution Workflow</h3>
+<ol>
+<li>Fork the repository and create a new branch for each contribution.</li>
+<li>Write clear, concise commit messages.</li>
+<li>Submit a pull request and wait for review.</li>
+</ol>
+<p>Thank you for helping make this project better!</p>
+<h2 id="license">License</h2>
+<p>The r-readstore is licensed under an GLP3 Open Source License.
+See the LICENSE file for more information.</p>
+<h2 id="credits-and-acknowledgments">Credits and Acknowledgments<a id="acknowledgments"></a></h2>
+<p>r-readstore is built upon the following open-source python packages and would like to thank all contributing authors, developers and partners.</p>
+<ul>
+<li>R (https://www.r-project.org/)</li>
+<li>httr (https://httr.r-lib.org/)</li>
+<li>base64enc (https://github.com/s-u/base64enc)</li>
+<li>ini (https://cran.r-project.org/web/packages/ini/index.html)</li>
+<li>jsonlite (https://cran.r-project.org/web/packages/jsonlite/index.html)</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024-2025 EVOBYTE Digital Biology Dr. Jonathan Alles
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/EvobyteDigitalBiology/r-readstore" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annnotation", "content.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      
+    
+  </body>
+</html>
